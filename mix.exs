@@ -33,7 +33,11 @@ defmodule Que.Mixfile do
   end
 
   defp deps do
-    [{:ex_doc, ">= 0.0.0", only: :dev}]
+    [
+      {:uuid,       "~> 1.1"   },
+      {:ex_utils,   ">= 0.0.0" },
+      {:ex_doc,     ">= 0.0.0", only: :dev}
+    ]
   end
 
   defp description do
