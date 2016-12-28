@@ -29,7 +29,10 @@ defmodule Que.Mixfile do
   end
 
   def application do
-    [applications: [:logger]]
+    [
+      mod: {Que, []},
+      applications: [:logger]
+    ]
   end
 
   defp deps do
