@@ -1,6 +1,10 @@
 defmodule Que.Supervisor do
   use Supervisor
 
+  @moduledoc false
+  # Module meant for internal use. Should be started as part of
+  # the Que application.
+
   def start_link do
     Supervisor.start_link(__MODULE__, :ok, name: __MODULE__)
   end
