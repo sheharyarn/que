@@ -25,5 +25,23 @@ defmodule Que.Job do
 
     %{ job | status: :started, pid: pid, ref: Process.monitor(pid) }
   end
+
+
+  def handle_success(job) do
+    Task.Supervisor.start_child(Que.TaskSupervisor, fn ->
+      job.worker.handle_success(job.arguments)
+    end)
+
+    %{ job | status: :completed, pid: nil, ref: nil }
+  end
+
+
+  def handle_failure(job, err) do
+    Task.Supervisor.start_child(Que.TaskSupervisor, fn ->
+      job.worker.handle_failure(job.arguments, err)
+    end)
+
+    %{ job | status: :failed, pid: nil, ref: nil }
+  end
 end
 
