@@ -20,7 +20,7 @@ defmodule Que do
   # Logger wrapper for internal Que use. Not meant to be
   # used as part of the Public API
   @doc false
-  def __log(msg) do
+  def __log__(msg) do
     Logger.debug("#{@prefix} #{msg}")
   end
 end

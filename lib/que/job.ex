@@ -19,6 +19,8 @@ defmodule Que.Job do
 
 
   def perform(job) do
+    Que.__log__("Starting #{job}")
+
     {:ok, pid} = Task.Supervisor.start_child(Que.TaskSupervisor, fn ->
       job.worker.perform(job.arguments)
     end)
@@ -28,6 +30,8 @@ defmodule Que.Job do
 
 
   def handle_success(job) do
+    Que.__log__("Completed #{job}")
+
     Task.Supervisor.start_child(Que.TaskSupervisor, fn ->
       job.worker.handle_success(job.arguments)
     end)
@@ -37,6 +41,8 @@ defmodule Que.Job do
 
 
   def handle_failure(job, err) do
+    Que.__log__("Failed #{job}")
+
     Task.Supervisor.start_child(Que.TaskSupervisor, fn ->
       job.worker.handle_failure(job.arguments, err)
     end)
