@@ -2,14 +2,15 @@ defmodule Que.Handler do
   use GenServer
 
   @name         __MODULE__
+  @moduledoc    false
   @concurrency  8
 
 
-  ## Public API
 
   def start_link do
     GenServer.start_link(@name, :ok, name: @name)
   end
+
 
   def add(worker, arg) do
     GenServer.call(@name, {:add_job, worker, arg})
@@ -17,6 +18,8 @@ defmodule Que.Handler do
 
 
   ## Internal Callbacks
+  ## ------------------
+
 
   # Initial State with Empty Queue and a list of currently running jobs
   def init(:ok) do
@@ -39,6 +42,15 @@ defmodule Que.Handler do
   # callback on the Worker
   def handle_info({:DOWN, ref, :process, _pid, :normal}, {qu, running}) do
     job = find_job_by_ref(ref, running)
+    Que.Job.handle_success(job)
+    {:noreply, remove_job(job, {qu, running})}
+  end
+
+
+  # Job failed / crashed - Does cleanup and executes the Error callback
+  def handle_info({:DOWN, ref, :process, _pid, err}, {qu, running}) do
+    job = find_job_by_ref(ref, running)
+    Que.Job.handle_failure(job, err)
     {:noreply, remove_job(job, {qu, running})}
   end
 
@@ -65,8 +77,10 @@ defmodule Que.Handler do
     Enum.find(jobs, fn job -> job.ref == ref end)
   end
 
+
   # Removes job from Running Tasks list, and processes the next item
   defp remove_job(job, {qu, running}) do
     process_queue({ qu, List.delete(running, job) })
   end
 end
+
