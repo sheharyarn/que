@@ -1,8 +1,14 @@
 defmodule Que.Job do
-  defstruct [:id, :arguments, :worker, :status, :ref, :pid]
-  @statuses [:queued, :started, :failed, :completed]
+  defstruct  [:id, :arguments, :worker, :status, :ref, :pid]
+  @statuses  [:queued, :started, :failed, :completed]
+  @moduledoc false
 
 
+  ## Module definition for Que.Job struct to manage a Job's state.
+  ## Meant only for internal usage, and not for the Public API.
+
+
+  # Creates a new Job struct with defaults
   def new(worker, args) do
     %Que.Job{
       id:         UUID.uuid4(),
@@ -13,11 +19,17 @@ defmodule Que.Job do
   end
 
 
+
+  # Update the Job status to one of the predefined values in @statuses
   def set_status(job, status) when status in @statuses do
     %{ job | status: status }
   end
 
 
+
+  # Updates the Job struct with new status and spawns & monitors a new Task
+  # under the TaskSupervisor which executes the perform method with supplied
+  # arguments
   def perform(job) do
     Que.__log__("Starting #{job}")
 
@@ -29,6 +41,9 @@ defmodule Que.Job do
   end
 
 
+
+  # Handles Job Success, Calls appropriate worker method and updates the job
+  # status to :completed
   def handle_success(job) do
     Que.__log__("Completed #{job}")
 
@@ -40,6 +55,9 @@ defmodule Que.Job do
   end
 
 
+
+  # Handles Job Failure, Calls appropriate worker method and updates the job
+  # status to :failed
   def handle_failure(job, err) do
     Que.__log__("Failed #{job}")
 
@@ -52,7 +70,10 @@ defmodule Que.Job do
 end
 
 
+
 defimpl String.Chars, for: Que.Job do
+  ## Implementing the String.Chars protocol for Que.Job structs
+
   def to_string(job) do
     "Job # #{job.id} with #{ExUtils.Module.name(job.worker)}"
   end
