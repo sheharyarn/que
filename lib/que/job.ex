@@ -1,5 +1,6 @@
 defmodule Que.Job do
   defstruct  [:id, :arguments, :worker, :status, :ref, :pid]
+
   @statuses  [:queued, :started, :failed, :completed]
   @moduledoc false
 
@@ -33,9 +34,10 @@ defmodule Que.Job do
   def perform(job) do
     Que.__log__("Starting #{job}")
 
-    {:ok, pid} = Task.Supervisor.start_child(Que.TaskSupervisor, fn ->
-      job.worker.perform(job.arguments)
-    end)
+    {:ok, pid} =
+      do_task(fn ->
+        job.worker.perform(job.arguments)
+      end)
 
     %{ job | status: :started, pid: pid, ref: Process.monitor(pid) }
   end
@@ -47,7 +49,7 @@ defmodule Que.Job do
   def handle_success(job) do
     Que.__log__("Completed #{job}")
 
-    Task.Supervisor.start_child(Que.TaskSupervisor, fn ->
+    do_task(fn ->
       job.worker.on_success(job.arguments)
     end)
 
@@ -61,11 +63,18 @@ defmodule Que.Job do
   def handle_failure(job, err) do
     Que.__log__("Failed #{job}")
 
-    Task.Supervisor.start_child(Que.TaskSupervisor, fn ->
+    do_task(fn ->
       job.worker.on_failure(job.arguments, err)
     end)
 
     %{ job | status: :failed, pid: nil, ref: nil }
+  end
+
+
+
+  # Off-load tasks to custom Que.TaskSupervisor
+  defp do_task(fun) do
+    Task.Supervisor.start_child(Que.TaskSupervisor, fun)
   end
 end
 
