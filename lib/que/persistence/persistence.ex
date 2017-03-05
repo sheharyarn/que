@@ -3,28 +3,34 @@ defmodule Que.Persistence do
 
   @adapter Que.Persistence.Mnesia
 
+  @methods %{
+    main:   [:all, :completed, :incomplete],
+    job:    [:find, :insert, :update, :destroy],
+    worker: [:for_worker]
+  }
 
-  def find(%Job{} = job) do
+
+  # Main Methods (No Args)
+  for method <- @methods.main do
+    def unquote(method)() do
+      @adapter.unquote(method)()
+    end
   end
 
-  def insert(%Job{} = job) do
+
+  # Methods for Jobs
+  for method <- @methods.job do
+    def unquote(method)(%Job{} = job) do
+      @adapter.unquote(method)(job)
+    end
   end
 
-  def update(%Job{} = job) do
+
+  # Methods for Workers
+  for method <- @methods.worker do
+    def unquote(method)(worker) do
+      @adapter.unquote(method)(worker)
+    end
   end
 
-  def destroy(%Job{} = job) do
-  end
-
-  def all do
-  end
-
-  def completed do
-  end
-
-  def incomplete do
-  end
-
-  def for_worker(worker) do
-  end
 end
