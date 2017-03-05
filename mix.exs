@@ -31,13 +31,14 @@ defmodule Que.Mixfile do
   def application do
     [
       mod: {Que, []},
-      applications: [:logger]
+      applications: [:logger, :amnesia]
     ]
   end
 
   defp deps do
     [
       {:uuid,       "~> 1.1"   },
+      {:amnesia,    "~> 0.2"   },
       {:ex_utils,   ">= 0.0.0" },
       {:ex_doc,     ">= 0.0.0", only: :dev}
     ]
