@@ -1,5 +1,7 @@
 defmodule Que.Job do
-  defstruct  [:id, :arguments, :worker, :status, :ref, :pid]
+  ## Note: Update Que.Persistence.Mnesia after changing these values
+
+  defstruct  [:id, :uuid, :arguments, :worker, :status, :ref, :pid]
 
   @statuses  [:queued, :started, :failed, :completed]
   @moduledoc false
@@ -12,7 +14,7 @@ defmodule Que.Job do
   # Creates a new Job struct with defaults
   def new(worker, args) do
     %Que.Job{
-      id:         UUID.uuid4(),
+      uuid:       UUID.uuid4(),
       status:     :queued,
       worker:     worker,
       arguments:  args
