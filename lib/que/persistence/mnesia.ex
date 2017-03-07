@@ -7,6 +7,11 @@ defmodule Que.Persistence.Mnesia do
   @store  Module.concat(@db, @config[:table])
 
 
+  def initialize do
+    @db.create
+  end
+
+
   defdatabase DB do
     deftable Jobs, [{:id, autoincrement}, :uuid, :arguments, :worker, :status, :ref, :pid],
       type:  :ordered_set,
