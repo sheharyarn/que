@@ -20,6 +20,28 @@ defmodule Que.Persistence.Mnesia do
       @store __MODULE__
 
 
+      @doc "Finds all Jobs"
+      def find_all_jobs do
+        Amnesia.transaction do
+          @store.keys
+          |> @store.match
+          |> Amnesia.Selection.values
+          |> Enum.map(&to_que_job/1)
+        end
+      end
+
+
+      @doc "Finds a Job in the DB"
+      def find_job(job) do
+        Amnesia.transaction do
+          job
+          |> normalize_id
+          |> @store.read
+          |> to_que_job
+        end
+      end
+
+
       @doc "Inserts a new Que.Job in to DB"
       def create_job(job) do
         Amnesia.transaction do
@@ -34,17 +56,6 @@ defmodule Que.Persistence.Mnesia do
       @doc "Updates existing Que.Job in DB"
       def update_job(job) do
         create_job(job)
-      end
-
-
-      @doc "Inserts a new Que.Job in to DB"
-      def find_job(job) do
-        Amnesia.transaction do
-          job
-          |> normalize_id
-          |> @store.read
-          |> to_que_job
-        end
       end
 
 
@@ -87,7 +98,9 @@ defmodule Que.Persistence.Mnesia do
   end
 
 
+  defdelegate all,            to: @store,   as: :find_all_jobs
   defdelegate find(job),      to: @store,   as: :find_job
+
   defdelegate insert(job),    to: @store,   as: :create_job
   defdelegate update(job),    to: @store,   as: :update_job
   defdelegate destroy(job),   to: @store,   as: :delete_job
