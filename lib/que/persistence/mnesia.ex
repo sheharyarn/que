@@ -31,13 +31,29 @@ defmodule Que.Persistence.Mnesia do
       end
 
 
+      @doc "Updates existing Que.Job in DB"
+      def update_job(job) do
+        create_job(job)
+      end
+
+
       @doc "Inserts a new Que.Job in to DB"
       def find_job(job) do
         Amnesia.transaction do
           job
           |> normalize_id
-          |> @store.read()
+          |> @store.read
           |> to_que_job
+        end
+      end
+
+
+      @doc "Deletes a Que.Job from the DB"
+      def delete_job(job) do
+        Amnesia.transaction do
+          job
+          |> normalize_id
+          |> @store.delete
         end
       end
 
@@ -71,6 +87,8 @@ defmodule Que.Persistence.Mnesia do
   end
 
 
-  defdelegate find(job),   to: @store, as: :find_job
-  defdelegate insert(job), to: @store, as: :create_job
+  defdelegate find(job),      to: @store,   as: :find_job
+  defdelegate insert(job),    to: @store,   as: :create_job
+  defdelegate update(job),    to: @store,   as: :update_job
+  defdelegate destroy(job),   to: @store,   as: :delete_job
 end
