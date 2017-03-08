@@ -20,6 +20,7 @@ defmodule Que.Persistence.Mnesia do
       @store __MODULE__
 
 
+      @doc "Inserts a new Que.Job in to DB"
       def create_job(job) do
         Amnesia.transaction do
           job
@@ -29,11 +30,27 @@ defmodule Que.Persistence.Mnesia do
         end
       end
 
+
+      @doc "Inserts a new Que.Job in to DB"
       def find_job(job) do
         Amnesia.transaction do
-          job.id
+          job
+          |> normalize_id
           |> @store.read()
           |> to_que_job
+        end
+      end
+
+
+
+      ## PRIVATE METHODS
+
+
+      # Returns Job ID
+      defp normalize_id(job) do
+        cond do
+          is_map(job) -> job.id
+          true        -> job
         end
       end
 
@@ -43,10 +60,13 @@ defmodule Que.Persistence.Mnesia do
         struct(@store, Map.from_struct(job))
       end
 
-      # Convert Mnesia Job to Que.Job
+
+      # Convert Mnesia DB Job to Que.Job
+      defp to_que_job(nil), do: nil
       defp to_que_job(%@store{} = job) do
         struct(Que.Job, Map.from_struct(job))
       end
+
     end
   end
 
