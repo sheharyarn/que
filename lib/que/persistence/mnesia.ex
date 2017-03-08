@@ -49,4 +49,8 @@ defmodule Que.Persistence.Mnesia do
       end
     end
   end
+
+
+  defdelegate find(job),   to: @store, as: :find_job
+  defdelegate insert(job), to: @store, as: :create_job
 end
