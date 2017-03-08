@@ -1,6 +1,4 @@
 defmodule Que.Persistence do
-  alias Que.Job
-
   @adapter Que.Persistence.Mnesia
 
 
@@ -17,5 +15,14 @@ defmodule Que.Persistence do
   defdelegate incomplete,             to: @adapter
 
   defdelegate for_worker(worker),     to: @adapter
+
+
+
+  # Macro so future adapters `use` this module
+  defmacro __using__(_opts) do
+    quote do
+      @parent unquote(__MODULE__)
+    end
+  end
 
 end

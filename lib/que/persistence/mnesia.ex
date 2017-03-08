@@ -1,4 +1,5 @@
 defmodule Que.Persistence.Mnesia do
+  use Que.Persistence
   use Amnesia
 
   @config [db: DB, table: Jobs]
