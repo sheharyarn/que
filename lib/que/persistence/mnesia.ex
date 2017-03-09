@@ -24,10 +24,9 @@ defmodule Que.Persistence.Mnesia do
       @doc "Finds all Jobs"
       def find_all_jobs do
         Amnesia.transaction do
-          @store.keys
-          |> @store.match
-          |> Amnesia.Selection.values
-          |> Enum.map(&to_que_job/1)
+          keys
+          |> match
+          |> parse_selection
         end
       end
 
@@ -37,7 +36,7 @@ defmodule Que.Persistence.Mnesia do
         Amnesia.transaction do
           job
           |> normalize_id
-          |> @store.read
+          |> read
           |> to_que_job
         end
       end
@@ -48,7 +47,7 @@ defmodule Que.Persistence.Mnesia do
         Amnesia.transaction do
           job
           |> to_db_job
-          |> @store.write
+          |> write
           |> to_que_job
         end
       end
@@ -65,7 +64,7 @@ defmodule Que.Persistence.Mnesia do
         Amnesia.transaction do
           job
           |> normalize_id
-          |> @store.delete
+          |> delete
         end
       end
 
@@ -93,6 +92,14 @@ defmodule Que.Persistence.Mnesia do
       defp to_que_job(nil), do: nil
       defp to_que_job(%@store{} = job) do
         struct(Que.Job, Map.from_struct(job))
+      end
+
+
+      # Convert Selection to Que.Job struct list
+      defp parse_selection(selection) do
+        selection
+        |> Amnesia.Selection.values
+        |> Enum.map(&to_que_job/1)
       end
 
     end
