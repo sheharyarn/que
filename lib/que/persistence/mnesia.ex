@@ -24,8 +24,17 @@ defmodule Que.Persistence.Mnesia do
       @doc "Finds all Jobs"
       def find_all_jobs do
         Amnesia.transaction do
-          keys
+          keys()
           |> match
+          |> parse_selection
+        end
+      end
+
+
+      @doc "Find Completed Jobs"
+      def find_completed_jobs do
+        Amnesia.transaction do
+          where(status == :completed)
           |> parse_selection
         end
       end
@@ -107,6 +116,7 @@ defmodule Que.Persistence.Mnesia do
 
 
   defdelegate all,            to: @store,   as: :find_all_jobs
+  defdelegate completed,      to: @store,   as: :find_completed_jobs
   defdelegate find(job),      to: @store,   as: :find_job
 
   defdelegate insert(job),    to: @store,   as: :create_job
