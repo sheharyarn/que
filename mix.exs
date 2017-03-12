@@ -31,7 +31,7 @@ defmodule Que.Mixfile do
   def application do
     [
       mod: {Que, []},
-      applications: [:logger, :amnesia]
+      applications: [:logger]
     ]
   end
 
