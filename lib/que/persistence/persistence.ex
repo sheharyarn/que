@@ -15,6 +15,7 @@ defmodule Que.Persistence do
   defdelegate incomplete,             to: @adapter
 
   defdelegate for_worker(worker),     to: @adapter
+  defdelegate initialize,             to: @adapter
 
 
 
