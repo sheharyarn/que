@@ -4,22 +4,12 @@ defmodule Que.Persistence.Mnesia do
 
   @config [
     db:     DB,
-    table:  Jobs,
-    path:   Application.get_env(:mnesia, :dir, 'mnesia/#{Mix.env}/#{node()}')
+    table:  Jobs
   ]
 
   @db     Module.concat(__MODULE__, @config[:db])
   @store  Module.concat(@db, @config[:table])
 
-
-  def start do
-    Application.put_env(:mnesia, :dir, @config[:path])
-    Application.start(:mnesia)
-  end
-
-  def stop do
-    Application.stop(:mnesia)
-  end
 
   def initialize do
     @db.create
