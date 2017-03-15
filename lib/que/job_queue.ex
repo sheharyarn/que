@@ -22,8 +22,21 @@ defmodule Que.JobQueue do
     %{ q | queued: queued ++ jobs }
   end
 
-  def push(%Que.JobQueue{} = q, job) do
-    push(q, [job])
+  def push(queue, job) do
+    push(queue, [job])
+  end
+
+
+
+  @doc """
+  Pops the next job in queue and returns a queue and job tuple
+  """
+  def pop(%Que.JobQueue{queued: [ job | rest ]} = q) do
+    { %{ q | queued: rest }, job }
+  end
+
+  def pop(%Que.JobQueue{queued: []} = q) do
+    { q, nil }
   end
 
 end
