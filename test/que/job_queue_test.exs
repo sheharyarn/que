@@ -13,11 +13,30 @@ defmodule Que.Test.JobQueue do
 
 
   test "#new builds a new job queue with specified jobs" do
-    jobs  = [1, 2, 3]
-    q = Que.JobQueue.new(TestWorker, jobs)
+    q = Que.JobQueue.new(TestWorker, [1, 2, 3])
 
     assert q.__struct__ == Que.JobQueue
-    assert q.queued     == jobs
+    assert q.queued     == [1, 2, 3]
+  end
+
+
+  test "#push adds a single job to the queued list" do
+    q =
+      TestWorker
+      |> Que.JobQueue.new([1, 2, 3])
+      |> Que.JobQueue.push(4)
+
+    assert q.queued == [1, 2, 3, 4]
+  end
+
+
+  test "#push adds multiple jobs to the queued list" do
+    q =
+      TestWorker
+      |> Que.JobQueue.new([1, 2, 3])
+      |> Que.JobQueue.push([4, 5, 6, 7])
+
+    assert q.queued == [1, 2, 3, 4, 5, 6, 7]
   end
 
 end
