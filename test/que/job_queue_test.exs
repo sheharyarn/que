@@ -39,5 +39,27 @@ defmodule Que.Test.JobQueue do
     assert q.queued == [1, 2, 3, 4, 5, 6, 7]
   end
 
+
+  test "#pop gets the next job in queue and removes it from the list" do
+    {q, job} =
+      TestWorker
+      |> Que.JobQueue.new([1, 2, 3])
+      |> Que.JobQueue.pop
+
+    assert job      == 1
+    assert q.queued == [2, 3]
+  end
+
+
+  test "#pop returns nil for empty queues" do
+    {q, job} =
+      TestWorker
+      |> Que.JobQueue.new
+      |> Que.JobQueue.pop
+
+    assert job      == nil
+    assert q.queued == []
+  end
+
 end
 
