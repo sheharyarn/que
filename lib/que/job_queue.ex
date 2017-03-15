@@ -3,7 +3,7 @@ defmodule Que.JobQueue do
 
 
   @doc """
-  Creates a new processable JobQueue with defaults
+  Returns a new processable JobQueue with defaults
   """
   def new(worker, jobs \\ []) do
     %Que.JobQueue{
@@ -11,6 +11,19 @@ defmodule Que.JobQueue do
       queued:  jobs,
       running: []
     }
+  end
+
+
+
+  @doc """
+  Pushes one or more Jobs to the `queued` list
+  """
+  def push(%Que.JobQueue{queued: queued} = q, jobs) when is_list(jobs) do
+    %{ q | queued: queued ++ jobs }
+  end
+
+  def push(%Que.JobQueue{} = q, job) do
+    push(q, [job])
   end
 
 end
