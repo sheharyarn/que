@@ -1,6 +1,8 @@
 defmodule Que.Test.JobQueue do
   use ExUnit.Case
 
+  alias Que.Test.TestWorker
+
 
   test "#new builds a new job queue with defaults" do
     q = Que.JobQueue.new(TestWorker)

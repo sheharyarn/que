@@ -1,6 +1,8 @@
 defmodule Que.Test.Job do
   use ExUnit.Case
 
+  alias Que.Test.TestWorker
+
 
   test "#new builds a new Job struct with defaults" do
     job = Que.Job.new(TestWorker)
