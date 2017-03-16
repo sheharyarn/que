@@ -1,17 +1,18 @@
 defmodule Que.Job do
-  ## Note: Update Que.Persistence.Mnesia after changing these values
-
   defstruct  [:id, :uuid, :arguments, :worker, :status, :ref, :pid]
-
-  @statuses  [:queued, :started, :failed, :completed]
-  @moduledoc false
+  ## Note: Update Que.Persistence.Mnesia after changing these values
 
 
   ## Module definition for Que.Job struct to manage a Job's state.
-  ## Meant only for internal usage, and not for the Public API.
+  ## Meant for internal usage, and not for the Public API.
 
 
-  # Creates a new Job struct with defaults
+  @statuses  [:queued, :started, :failed, :completed]
+
+
+  @doc """
+  Returns a new Job struct with defaults
+  """
   def new(worker, args) do
     %Que.Job{
       uuid:       UUID.uuid4(),
@@ -23,16 +24,20 @@ defmodule Que.Job do
 
 
 
-  # Update the Job status to one of the predefined values in @statuses
+  @doc """
+  Update the Job status to one of the predefined values in `@statuses`
+  """
   def set_status(job, status) when status in @statuses do
     %{ job | status: status }
   end
 
 
 
-  # Updates the Job struct with new status and spawns & monitors a new Task
-  # under the TaskSupervisor which executes the perform method with supplied
-  # arguments
+  @doc """
+  Updates the Job struct with new status and spawns & monitors a new Task
+  under the TaskSupervisor which executes the perform method with supplied
+  arguments
+  """
   def perform(job) do
     Que.__log__("Starting #{job}")
 
@@ -46,8 +51,10 @@ defmodule Que.Job do
 
 
 
-  # Handles Job Success, Calls appropriate worker method and updates the job
-  # status to :completed
+  @doc """
+  Handles Job Success, Calls appropriate worker method and updates the job
+  status to :completed
+  """
   def handle_success(job) do
     Que.__log__("Completed #{job}")
 
@@ -60,8 +67,10 @@ defmodule Que.Job do
 
 
 
-  # Handles Job Failure, Calls appropriate worker method and updates the job
-  # status to :failed
+  @doc """
+  Handles Job Failure, Calls appropriate worker method and updates the job
+  status to :failed
+  """
   def handle_failure(job, err) do
     Que.__log__("Failed #{job}")
 
