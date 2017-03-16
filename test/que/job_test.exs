@@ -15,8 +15,26 @@ defmodule Que.Test.Job do
 
   test "#new accepts arguments" do
     job = Que.Job.new(TestWorker, a: 1, b: 2)
-
     assert job.arguments == [a: 1, b: 2]
+  end
+
+
+  test "#set_status updates job status to the specified value" do
+    job =
+      TestWorker
+      |> Que.Job.new
+      |> Que.Job.set_status(:completed)
+
+    assert job.status == :completed
+  end
+
+
+  test "#set_status raises error if the status is not one of predefined values" do
+    assert_raise(FunctionClauseError, fn ->
+      TestWorker
+      |> Que.Job.new
+      |> Que.Job.set_status(:unknown_value)
+    end)
   end
 
 end
