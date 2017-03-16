@@ -12,10 +12,11 @@ defmodule Que.Job do
   @type     status :: atom
 
 
+
   @doc """
   Returns a new Job struct with defaults
   """
-  def new(worker, args) do
+  def new(worker, args \\ nil) do
     %Que.Job{
       uuid:       UUID.uuid4(),
       status:     :queued,
