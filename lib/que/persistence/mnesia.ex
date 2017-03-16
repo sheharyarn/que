@@ -17,11 +17,14 @@ defmodule Que.Persistence.Mnesia do
 
 
   defdatabase DB do
+    @moduledoc false
+
     deftable Jobs, [{:id, autoincrement}, :uuid, :arguments, :worker, :status, :ref, :pid],
       type:  :ordered_set,
       index: [:uuid, :worker, :ref] do
 
-      @store __MODULE__
+      @store     __MODULE__
+      @moduledoc false
 
 
       @doc "Finds all Jobs"
