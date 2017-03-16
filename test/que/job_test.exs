@@ -37,4 +37,16 @@ defmodule Que.Test.Job do
     end)
   end
 
+
+  test "#perform works as expected" do
+    job =
+      TestWorker
+      |> Que.Job.new
+      |> Que.Job.perform
+
+    assert job.status == :started
+    refute job.pid    == nil
+    refute job.ref    == nil
+  end
+
 end
