@@ -7,7 +7,9 @@ defmodule Que.Job do
   ## Meant for internal usage, and not for the Public API.
 
 
-  @statuses  [:queued, :started, :failed, :completed]
+  @statuses [:queued, :started, :failed, :completed]
+  @typedoc  "One of the atoms in `#{inspect(@statuses)}`"
+  @type     status :: atom
 
 
   @doc """
