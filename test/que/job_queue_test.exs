@@ -1,13 +1,14 @@
 defmodule Que.Test.JobQueue do
   use ExUnit.Case
 
+  alias Que.JobQueue
   alias Que.Test.TestWorker
 
 
   test "#new builds a new job queue with defaults" do
-    q = Que.JobQueue.new(TestWorker)
+    q = JobQueue.new(TestWorker)
 
-    assert q.__struct__ == Que.JobQueue
+    assert q.__struct__ == JobQueue
     assert q.worker     == TestWorker
     assert q.queued     == []
     assert q.running    == []
@@ -15,9 +16,9 @@ defmodule Que.Test.JobQueue do
 
 
   test "#new builds a new job queue with specified jobs" do
-    q = Que.JobQueue.new(TestWorker, [1, 2, 3])
+    q = JobQueue.new(TestWorker, [1, 2, 3])
 
-    assert q.__struct__ == Que.JobQueue
+    assert q.__struct__ == JobQueue
     assert q.queued     == [1, 2, 3]
   end
 
@@ -25,8 +26,8 @@ defmodule Que.Test.JobQueue do
   test "#push adds a single job to the queued list" do
     q =
       TestWorker
-      |> Que.JobQueue.new([1, 2, 3])
-      |> Que.JobQueue.push(4)
+      |> JobQueue.new([1, 2, 3])
+      |> JobQueue.push(4)
 
     assert q.queued == [1, 2, 3, 4]
   end
@@ -35,8 +36,8 @@ defmodule Que.Test.JobQueue do
   test "#push adds multiple jobs to the queued list" do
     q =
       TestWorker
-      |> Que.JobQueue.new([1, 2, 3])
-      |> Que.JobQueue.push([4, 5, 6, 7])
+      |> JobQueue.new([1, 2, 3])
+      |> JobQueue.push([4, 5, 6, 7])
 
     assert q.queued == [1, 2, 3, 4, 5, 6, 7]
   end
@@ -45,8 +46,8 @@ defmodule Que.Test.JobQueue do
   test "#pop gets the next job in queue and removes it from the list" do
     {q, job} =
       TestWorker
-      |> Que.JobQueue.new([1, 2, 3])
-      |> Que.JobQueue.pop
+      |> JobQueue.new([1, 2, 3])
+      |> JobQueue.pop
 
     assert job      == 1
     assert q.queued == [2, 3]
@@ -56,8 +57,8 @@ defmodule Que.Test.JobQueue do
   test "#pop returns nil for empty queues" do
     {q, job} =
       TestWorker
-      |> Que.JobQueue.new
-      |> Que.JobQueue.pop
+      |> JobQueue.new
+      |> JobQueue.pop
 
     assert job      == nil
     assert q.queued == []
