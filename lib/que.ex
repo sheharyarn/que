@@ -1,8 +1,5 @@
 defmodule Que do
-  use     Application
-  require Logger
-
-  @prefix "[Que]"
+  use Application
 
   @moduledoc """
   TODO: Add detailed usage docs about the Que package
@@ -14,14 +11,6 @@ defmodule Que do
   """
   def start(_type, _args) do
     Que.Supervisor.start_link
-  end
-
-
-  # Logger wrapper for internal Que use. Not meant to be
-  # used as part of the Public API
-  @doc false
-  def __log__(msg) do
-    Logger.debug("#{@prefix} #{msg}")
   end
 
 

@@ -30,7 +30,7 @@ defmodule Que.Handler do
 
   # Pushes a new Job to the queue and processes it
   def handle_call({:add_job, worker, arg}, _from, {qu, running}) do
-    Que.__log__("Queued new Job for #{worker}")
+    Que.Helpers.log("Queued new Job for #{worker}")
 
     job   = Que.Job.new(worker, arg)
     qu    = :queue.in(job, qu)

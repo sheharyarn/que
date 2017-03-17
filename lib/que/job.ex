@@ -42,7 +42,7 @@ defmodule Que.Job do
   arguments
   """
   def perform(job) do
-    Que.__log__("Starting #{job}")
+    Que.Helpers.log("Starting #{job}")
 
     {:ok, pid} =
       do_task(fn ->
@@ -59,7 +59,7 @@ defmodule Que.Job do
   status to :completed
   """
   def handle_success(job) do
-    Que.__log__("Completed #{job}")
+    Que.Helpers.log("Completed #{job}")
 
     do_task(fn ->
       job.worker.on_success(job.arguments)
@@ -75,7 +75,7 @@ defmodule Que.Job do
   status to :failed
   """
   def handle_failure(job, err) do
-    Que.__log__("Failed #{job}")
+    Que.Helpers.log("Failed #{job}")
 
     do_task(fn ->
       job.worker.on_failure(job.arguments, err)
