@@ -2,6 +2,7 @@ defmodule Que.Test.Job do
   use ExUnit.Case
 
   alias Que.Job
+  alias Que.Test.Helpers
   alias Que.Test.TestWorker
 
 
@@ -43,14 +44,18 @@ defmodule Que.Test.Job do
 
 
   test "#perform works as expected" do
-    job =
-      TestWorker
-      |> Job.new
-      |> Job.perform
+    capture = Helpers.capture_log(fn ->
+      job =
+        TestWorker
+        |> Job.new
+        |> Job.perform
 
-    assert job.status == :started
-    refute job.pid    == nil
-    refute job.ref    == nil
+      assert job.status == :started
+      refute job.pid    == nil
+      refute job.ref    == nil
+    end)
+
+    assert capture =~ ~r/Starting Job/
   end
 
 end
