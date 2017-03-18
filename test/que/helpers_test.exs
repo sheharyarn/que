@@ -1,7 +1,7 @@
-defmodule Que.Test.HelpersTest do
+defmodule Que.Test.Helpers do
   use ExUnit.Case
 
-  alias Que.Test.Helpers
+  alias Que.Test.Meta.Helpers
 
 
   test "#log logs text with Que prefix" do

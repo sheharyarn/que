@@ -2,7 +2,7 @@ defmodule Que.Test.JobQueue do
   use ExUnit.Case
 
   alias Que.JobQueue
-  alias Que.Test.TestWorker
+  alias Que.Test.Meta.TestWorker
 
 
   test "#new builds a new job queue with defaults" do

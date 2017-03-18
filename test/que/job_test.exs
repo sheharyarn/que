@@ -2,8 +2,8 @@ defmodule Que.Test.Job do
   use ExUnit.Case
 
   alias Que.Job
-  alias Que.Test.Helpers
-  alias Que.Test.TestWorker
+  alias Que.Test.Meta.Helpers
+  alias Que.Test.Meta.TestWorker
 
 
   test "#new builds a new Job struct with defaults" do

@@ -1,7 +1,7 @@
 
 ## Namespace all test related modules under Que.Test
 
-defmodule Que.Test do
+defmodule Que.Test.Meta do
 
   ## A TestWorker for handling Test Jobs
 
@@ -15,10 +15,6 @@ defmodule Que.Test do
 
     def on_success(args) do
       Logger.debug("success: #{inspect(args)}")
-    end
-
-    def on_failure(args, _err) do
-      Logger.debug("failure: #{inspect(args)}")
     end
   end
 
