@@ -27,9 +27,7 @@ defmodule Que.Test do
 
   defmodule Helpers do
     def capture_io(fun) do
-      ExUnit.CaptureIO.capture_io(fn ->
-        fun.()
-      end)
+      ExUnit.CaptureIO.capture_io(fun)
     end
 
     def capture_log(level \\ :debug, fun) do
