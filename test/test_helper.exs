@@ -32,7 +32,7 @@ defmodule Que.Test.Meta do
   defmodule FailureWorker do
     use Que.Worker
 
-    def perform do
+    def perform(args) do
       Logger.debug("#{__MODULE__} - perform: #{inspect(args)}")
       raise "some error"
     end
