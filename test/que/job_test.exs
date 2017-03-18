@@ -5,6 +5,7 @@ defmodule Que.Test.Job do
   alias Que.Test.Meta.Helpers
   alias Que.Test.Meta.TestWorker
   alias Que.Test.Meta.SuccessWorker
+  alias Que.Test.Meta.FailureWorker
 
 
   test "#new builds a new Job struct with defaults" do
@@ -56,7 +57,7 @@ defmodule Que.Test.Job do
       refute job.ref    == nil
     end)
 
-    assert capture =~ ~r/Starting Job/
+    assert capture =~ ~r/Starting/
   end
 
 
@@ -72,7 +73,23 @@ defmodule Que.Test.Job do
       assert job.ref    == nil
     end)
 
-    assert capture =~ ~r/Completed Job/
+    assert capture =~ ~r/Completed/
+  end
+
+
+  test "#handle_failure works as expected" do
+    capture = Helpers.capture_log(fn ->
+      job =
+        FailureWorker
+        |> Job.new
+        |> Job.handle_failure("some error")
+
+      assert job.status == :failed
+      assert job.pid    == nil
+      assert job.ref    == nil
+    end)
+
+    assert capture =~ ~r/Failed/
   end
 
 end
