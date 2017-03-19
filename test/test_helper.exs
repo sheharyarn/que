@@ -60,6 +60,9 @@ defmodule Que.Test.Meta do
 end
 
 
+# Skip Pending Tests
+ExUnit.configure(exclude: [pending: true])
+
 # Start Tests
 ExUnit.start()
 

@@ -13,4 +13,10 @@ defmodule Que.Test.Helpers do
     assert capture =~ "something"
   end
 
+
+  @tag :pending
+  test "#do_task works as expected" do
+    raise "pending test"
+  end
+
 end
