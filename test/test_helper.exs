@@ -13,19 +13,15 @@ defmodule Que.Test.Meta do
   defmodule TestWorker do
     use Que.Worker
 
-    def perform(args) do
-      Logger.debug("#{__MODULE__} - perform: #{inspect(args)}")
-    end
+    def perform(args), do: Logger.debug("#{__MODULE__} - perform: #{inspect(args)}")
   end
 
 
   defmodule SuccessWorker do
     use Que.Worker
-    import TestWorker
 
-    def on_success(args) do
-      Logger.debug("#{__MODULE__} - success: #{inspect(args)}")
-    end
+    def perform(args),    do: Logger.debug("#{__MODULE__} - perform: #{inspect(args)}")
+    def on_success(args), do: Logger.debug("#{__MODULE__} - success: #{inspect(args)}")
   end
 
 
@@ -37,9 +33,7 @@ defmodule Que.Test.Meta do
       raise "some error"
     end
 
-    def on_failure(args, _err) do
-      Logger.debug("#{__MODULE__} - failure: #{inspect(args)}")
-    end
+    def on_failure(args, _err), do: Logger.debug("#{__MODULE__} - failure: #{inspect(args)}")
   end
 
 
