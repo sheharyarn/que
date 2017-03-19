@@ -18,4 +18,13 @@ defmodule Que.Helpers do
     Logger.info("#{@prefix} #{msg}")
   end
 
+
+
+  @doc """
+  Off-loads tasks to custom Que.TaskSupervisor
+  """
+  def do_task(fun) do
+    Task.Supervisor.start_child(Que.TaskSupervisor, fun)
+  end
+
 end

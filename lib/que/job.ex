@@ -45,7 +45,7 @@ defmodule Que.Job do
     Que.Helpers.log("Starting #{job}")
 
     {:ok, pid} =
-      do_task(fn ->
+      Que.Helpers.do_task(fn ->
         job.worker.perform(job.arguments)
       end)
 
@@ -61,7 +61,7 @@ defmodule Que.Job do
   def handle_success(job) do
     Que.Helpers.log("Completed #{job}")
 
-    do_task(fn ->
+    Que.Helpers.do_task(fn ->
       job.worker.on_success(job.arguments)
     end)
 
@@ -77,18 +77,11 @@ defmodule Que.Job do
   def handle_failure(job, err) do
     Que.Helpers.log("Failed #{job}")
 
-    do_task(fn ->
+    Que.Helpers.do_task(fn ->
       job.worker.on_failure(job.arguments, err)
     end)
 
     %{ job | status: :failed, pid: nil, ref: nil }
-  end
-
-
-
-  # Off-load tasks to custom Que.TaskSupervisor
-  defp do_task(fun) do
-    Task.Supervisor.start_child(Que.TaskSupervisor, fun)
   end
 end
 
