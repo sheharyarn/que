@@ -42,6 +42,10 @@ defmodule Que.Test.Meta do
   # =======================
 
   defmodule Helpers do
+    def wait(ms \\ 10) do
+      :timer.sleep(ms)
+    end
+
     def capture_io(fun) do
       ExUnit.CaptureIO.capture_io(fun)
     end
