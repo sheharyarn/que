@@ -1,6 +1,8 @@
 defmodule Que.JobQueue do
   defstruct [:worker, :queued, :running]
 
+  @concurrency 4
+
 
   @doc """
   Returns a new processable JobQueue with defaults
@@ -12,6 +14,17 @@ defmodule Que.JobQueue do
       running: []
     }
   end
+
+
+
+  def process(%Que.JobQueue{running: running} = q) when length(running) < @concurrency do
+    case pop(q) do
+      {q, nil} -> q
+      {q, job} -> %{ q | running: running ++ [Que.Job.perform(job)] }
+    end
+  end
+
+  def process(queue), do: queue
 
 
 
