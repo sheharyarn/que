@@ -83,11 +83,7 @@ defmodule Que.Test.Job do
   end
 
 
-  @tag :pending
   test "#handle_failure works as expected" do
-    # TODO:
-    # Fails sometimes for unknown reason
-
     capture = Helpers.capture_log(fn ->
       job =
         FailureWorker
@@ -97,9 +93,12 @@ defmodule Que.Test.Job do
       assert job.status == :failed
       assert job.pid    == nil
       assert job.ref    == nil
+
+      Helpers.wait
     end)
 
     assert capture =~ ~r/Failed/
+    assert capture =~ ~r/failure: nil/
   end
 
 end
