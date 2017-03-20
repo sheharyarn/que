@@ -55,9 +55,12 @@ defmodule Que.Test.Job do
       assert job.status == :started
       refute job.pid    == nil
       refute job.ref    == nil
+
+      Helpers.wait
     end)
 
     assert capture =~ ~r/Starting/
+    assert capture =~ ~r/perform: nil/
   end
 
 
@@ -71,9 +74,12 @@ defmodule Que.Test.Job do
       assert job.status == :completed
       assert job.pid    == nil
       assert job.ref    == nil
+
+      Helpers.wait
     end)
 
     assert capture =~ ~r/Completed/
+    assert capture =~ ~r/success: nil/
   end
 
 
