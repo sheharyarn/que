@@ -76,6 +76,8 @@ defmodule Que.Test.JobQueue do
 
       assert [%Job{status: :started}] = q.running
       assert [] == q.queued
+
+      Helpers.wait
     end)
 
     assert capture =~ ~r/Starting/
