@@ -66,8 +66,10 @@ defmodule Que.Test.Meta do
   end
 
 
-  # Mnesia specific helpers
-  defmodule Mnesia do
+  # Mnesia-specific helpers
+  # =======================
+
+  defmodule Helpers.Mnesia do
 
     # Cleans up Mnesia DB
     def reset do
@@ -76,6 +78,17 @@ defmodule Que.Test.Meta do
       :ok
     end
 
+    # Creates sample Mnesia jobs
+    def create_sample_jobs do
+      [
+        %Que.Job{id: 1, status: :completed, worker: TestWorker    },
+        %Que.Job{id: 2, status: :completed, worker: SuccessWorker },
+        %Que.Job{id: 3, status: :failed,    worker: FailureWorker },
+        %Que.Job{id: 4, status: :started,   worker: TestWorker    },
+        %Que.Job{id: 5, status: :queued,    worker: SuccessWorker },
+        %Que.Job{id: 6, status: :queued,    worker: FailureWorker }
+      ] |> Enum.map(&Que.Persistence.Mnesia.insert/1)
+    end
   end
 end
 
