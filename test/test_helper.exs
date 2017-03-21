@@ -48,13 +48,6 @@ defmodule Que.Test.Meta do
       :timer.sleep(ms)
     end
 
-    # Cleans up Mnesia DB
-    def reset_mnesia do
-      Que.Persistence.Mnesia.DB.destroy
-      Que.Persistence.Mnesia.DB.create
-      :ok
-    end
-
     # Captures IO output
     def capture_io(fun) do
       ExUnit.CaptureIO.capture_io(fun)
@@ -72,6 +65,18 @@ defmodule Que.Test.Meta do
     end
   end
 
+
+  # Mnesia specific helpers
+  defmodule Mnesia do
+
+    # Cleans up Mnesia DB
+    def reset do
+      Que.Persistence.Mnesia.DB.destroy
+      Que.Persistence.Mnesia.DB.create
+      :ok
+    end
+
+  end
 end
 
 
