@@ -42,14 +42,25 @@ defmodule Que.Test.Meta do
   # =======================
 
   defmodule Helpers do
+
+    # Sleeps for 10ms
     def wait(ms \\ 10) do
       :timer.sleep(ms)
     end
 
+    # Cleans up Mnesia DB
+    def reset_mnesia do
+      Que.Persistence.Mnesia.DB.destroy
+      Que.Persistence.Mnesia.DB.create
+      :ok
+    end
+
+    # Captures IO output
     def capture_io(fun) do
       ExUnit.CaptureIO.capture_io(fun)
     end
 
+    # Captures logged text to IO
     def capture_log(level \\ :debug, fun) do
       Logger.configure(level: level)
       ExUnit.CaptureIO.capture_io(:user, fn ->
