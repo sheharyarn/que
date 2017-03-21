@@ -29,4 +29,11 @@ defmodule Que.Test.Persistence.Mnesia do
     assert Mnesia.completed == [c1, c2]
   end
 
+
+  test "#incomplete returns all jobs not marked as completed" do
+    [_, _, f, s, q1, q2] = Helpers.Mnesia.create_sample_jobs
+
+    assert Mnesia.incomplete == [f, s, q1, q2]
+  end
+
 end
