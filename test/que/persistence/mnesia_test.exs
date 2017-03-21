@@ -22,4 +22,11 @@ defmodule Que.Test.Persistence.Mnesia do
     assert Mnesia.all == jobs
   end
 
+
+  test "#completed returns only completed jobs" do
+    [c1, c2 | _] = Helpers.Mnesia.create_sample_jobs
+
+    assert Mnesia.completed == [c1, c2]
+  end
+
 end
