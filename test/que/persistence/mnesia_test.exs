@@ -36,4 +36,26 @@ defmodule Que.Test.Persistence.Mnesia do
     assert Mnesia.incomplete == [f, s, q1, q2]
   end
 
+
+  test "#insert adds a job to the db" do
+    assert Mnesia.all == []
+
+    Mnesia.insert(%Job{status: :queued})
+    jobs = [job] = Mnesia.all
+
+    assert length(jobs)   == 1
+    assert job.__struct__ == Job
+    assert job.status     == :queued
+  end
+
+
+  test "#insert automatically assigns an id if not present" do
+    assert Mnesia.all == []
+
+    Mnesia.insert(%Job{status: :queued})
+    [job] = Mnesia.all
+
+    refute job.id == nil
+  end
+
 end
