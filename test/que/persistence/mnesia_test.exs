@@ -3,7 +3,10 @@ defmodule Que.Test.Persistence.Mnesia do
 
   alias Que.Job
   alias Que.Persistence.Mnesia
+
   alias Que.Test.Meta.Helpers
+  alias Que.Test.Meta.TestWorker
+  alias Que.Test.Meta.FailureWorker
 
   setup do
     Helpers.Mnesia.reset
@@ -56,6 +59,23 @@ defmodule Que.Test.Persistence.Mnesia do
     [job] = Mnesia.all
 
     refute job.id == nil
+  end
+
+
+  test "#update finds and updates job by id" do
+    Helpers.Mnesia.create_sample_jobs
+    [_, _, f | _] = Mnesia.all
+
+    assert f.id     == 3
+    assert f.worker == FailureWorker
+    assert f.status == :failed
+
+    Mnesia.update(%{ f | status: :queued, worker: TestWorker })
+    [_, _, f | _] = Mnesia.all
+
+    assert f.id     == 3
+    assert f.worker == TestWorker
+    assert f.status == :queued
   end
 
 end
