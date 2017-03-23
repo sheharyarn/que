@@ -6,6 +6,7 @@ defmodule Que.Test.Persistence.Mnesia do
 
   alias Que.Test.Meta.Helpers
   alias Que.Test.Meta.TestWorker
+  alias Que.Test.Meta.SuccessWorker
   alias Que.Test.Meta.FailureWorker
 
   setup do
@@ -43,7 +44,18 @@ defmodule Que.Test.Persistence.Mnesia do
   test "#find gets a job by its id" do
     [_, _, _, s | _] = Helpers.Mnesia.create_sample_jobs
 
-    assert ^s = Mnesia.find(4)
+    assert s == Mnesia.find(4)
+  end
+
+
+  test "#for_worker finds all jobs for a worker" do
+    assert Mnesia.all == []
+
+    [t1, s1, f1, t2, s2, f2] = Helpers.Mnesia.create_sample_jobs
+
+    assert [t1, t2] == Mnesia.for_worker(TestWorker)
+    assert [s1, s2] == Mnesia.for_worker(SuccessWorker)
+    assert [f1, f2] == Mnesia.for_worker(FailureWorker)
   end
 
 
@@ -91,6 +103,6 @@ defmodule Que.Test.Persistence.Mnesia do
 
     Mnesia.destroy(f)
 
-    assert [^c1, ^c2, ^s, ^q1, ^q2] = Mnesia.all
+    assert [c1, c2, s, q1, q2] == Mnesia.all
   end
 end
