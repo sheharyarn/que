@@ -40,6 +40,13 @@ defmodule Que.Test.Persistence.Mnesia do
   end
 
 
+  test "#find gets a job by its id" do
+    [_, _, _, s | _] = Helpers.Mnesia.create_sample_jobs
+
+    assert ^s = Mnesia.find(4)
+  end
+
+
   test "#insert adds a job to the db" do
     assert Mnesia.all == []
 
@@ -86,5 +93,4 @@ defmodule Que.Test.Persistence.Mnesia do
 
     assert [^c1, ^c2, ^s, ^q1, ^q2] = Mnesia.all
   end
-
 end
