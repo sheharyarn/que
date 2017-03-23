@@ -78,4 +78,13 @@ defmodule Que.Test.Persistence.Mnesia do
     assert f.status == :queued
   end
 
+
+  test "#destroy removes a job from DB" do
+    assert [c1, c2, f, s, q1, q2] = Helpers.Mnesia.create_sample_jobs
+
+    Mnesia.destroy(f)
+
+    assert [^c1, ^c2, ^s, ^q1, ^q2] = Mnesia.all
+  end
+
 end
