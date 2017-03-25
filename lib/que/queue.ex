@@ -1,14 +1,14 @@
-defmodule Que.JobQueue do
+defmodule Que.Queue do
   defstruct [:worker, :queued, :running]
 
   @concurrency 4
 
 
   @doc """
-  Returns a new processable JobQueue with defaults
+  Returns a new processable Queue with defaults
   """
   def new(worker, jobs \\ []) do
-    %Que.JobQueue{
+    %Que.Queue{
       worker:  worker,
       queued:  jobs,
       running: []
@@ -17,7 +17,7 @@ defmodule Que.JobQueue do
 
 
 
-  def process(%Que.JobQueue{running: running} = q) when length(running) < @concurrency do
+  def process(%Que.Queue{running: running} = q) when length(running) < @concurrency do
     case pop(q) do
       {q, nil} -> q
       {q, job} -> %{ q | running: running ++ [Que.Job.perform(job)] }
@@ -31,7 +31,7 @@ defmodule Que.JobQueue do
   @doc """
   Pushes one or more Jobs to the `queued` list
   """
-  def push(%Que.JobQueue{queued: queued} = q, jobs) when is_list(jobs) do
+  def push(%Que.Queue{queued: queued} = q, jobs) when is_list(jobs) do
     %{ q | queued: queued ++ jobs }
   end
 
@@ -44,11 +44,11 @@ defmodule Que.JobQueue do
   @doc """
   Pops the next job in queue and returns a queue and job tuple
   """
-  def pop(%Que.JobQueue{queued: [ job | rest ]} = q) do
+  def pop(%Que.Queue{queued: [ job | rest ]} = q) do
     { %{ q | queued: rest }, job }
   end
 
-  def pop(%Que.JobQueue{queued: []} = q) do
+  def pop(%Que.Queue{queued: []} = q) do
     { q, nil }
   end
 
