@@ -1,16 +1,16 @@
-defmodule Que.Test.JobQueue do
+defmodule Que.Test.Queue do
   use ExUnit.Case
 
   alias Que.Job
-  alias Que.JobQueue
+  alias Que.Queue
   alias Que.Test.Meta.Helpers
   alias Que.Test.Meta.TestWorker
 
 
   test "#new builds a new job queue with defaults" do
-    q = JobQueue.new(TestWorker)
+    q = Queue.new(TestWorker)
 
-    assert q.__struct__ == JobQueue
+    assert q.__struct__ == Queue
     assert q.worker     == TestWorker
     assert q.queued     == []
     assert q.running    == []
@@ -18,9 +18,9 @@ defmodule Que.Test.JobQueue do
 
 
   test "#new builds a new job queue with specified jobs" do
-    q = JobQueue.new(TestWorker, [1, 2, 3])
+    q = Queue.new(TestWorker, [1, 2, 3])
 
-    assert q.__struct__ == JobQueue
+    assert q.__struct__ == Queue
     assert q.queued     == [1, 2, 3]
   end
 
@@ -28,8 +28,8 @@ defmodule Que.Test.JobQueue do
   test "#push adds a single job to the queued list" do
     q =
       TestWorker
-      |> JobQueue.new([1, 2, 3])
-      |> JobQueue.push(4)
+      |> Queue.new([1, 2, 3])
+      |> Queue.push(4)
 
     assert q.queued == [1, 2, 3, 4]
   end
@@ -38,8 +38,8 @@ defmodule Que.Test.JobQueue do
   test "#push adds multiple jobs to the queued list" do
     q =
       TestWorker
-      |> JobQueue.new([1, 2, 3])
-      |> JobQueue.push([4, 5, 6, 7])
+      |> Queue.new([1, 2, 3])
+      |> Queue.push([4, 5, 6, 7])
 
     assert q.queued == [1, 2, 3, 4, 5, 6, 7]
   end
@@ -48,8 +48,8 @@ defmodule Que.Test.JobQueue do
   test "#pop gets the next job in queue and removes it from the list" do
     {q, job} =
       TestWorker
-      |> JobQueue.new([1, 2, 3])
-      |> JobQueue.pop
+      |> Queue.new([1, 2, 3])
+      |> Queue.pop
 
     assert job      == 1
     assert q.queued == [2, 3]
@@ -59,8 +59,8 @@ defmodule Que.Test.JobQueue do
   test "#pop returns nil for empty queues" do
     {q, job} =
       TestWorker
-      |> JobQueue.new
-      |> JobQueue.pop
+      |> Queue.new
+      |> Queue.pop
 
     assert job      == nil
     assert q.queued == []
@@ -71,8 +71,8 @@ defmodule Que.Test.JobQueue do
     capture = Helpers.capture_log(fn ->
       q =
         TestWorker
-        |> JobQueue.new([Job.new(TestWorker)])
-        |> JobQueue.process
+        |> Queue.new([Job.new(TestWorker)])
+        |> Queue.process
 
       assert [%Job{status: :started}] = q.running
       assert [] == q.queued
@@ -85,8 +85,8 @@ defmodule Que.Test.JobQueue do
 
 
   test "#process does nothing when there is nothing in queue" do
-    q_before = JobQueue.new(TestWorker)
-    q_after  = JobQueue.process(q_before)
+    q_before = Queue.new(TestWorker)
+    q_after  = Queue.process(q_before)
 
     assert q_after         == q_before
     assert q_after.queued  == []
