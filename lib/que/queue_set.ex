@@ -2,7 +2,12 @@ defmodule Que.QueueSet do
   defstruct queues: %{}
 
 
-  def new
+  @doc """
+  Returns a new QueueSet with defaults
+  """
+  def new do
+    %Que.QueueSet{}
+  end
 
   def add(job)
 
