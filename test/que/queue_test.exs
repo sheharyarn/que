@@ -93,5 +93,60 @@ defmodule Que.Test.Queue do
     assert q_after.running == []
   end
 
+
+  test "#update raises an error if the job doesn't exist in the queue" do
+    assert_raise(RuntimeError, ~r/Job not found/, fn ->
+      job = Job.new(TestWorker)
+      q   = Queue.new(TestWorker)
+
+      Queue.update(q, job)
+    end)
+  end
+
+
+  test "#update updates a job in queued" do
+    jobs = [
+      Job.new(TestWorker),
+      Job.new(TestWorker),
+      Job.new(TestWorker),
+      %Job{ worker: TestWorker, id: :x, status: :queued },
+      Job.new(TestWorker),
+      Job.new(TestWorker)
+    ]
+
+    q = %{ queued: [_, _, _, job | _] } =
+      %Queue{ queued: jobs, running: [] }
+
+    assert job.id     == :x
+    assert job.status == :queued
+
+    job = %{ job | status: :failed }
+    %{ queued: [_, _, _, job | _] } = Queue.update(q, job)
+
+    assert job.status == :failed
+  end
+
+
+  test "#update updates a job in running" do
+    jobs = [
+      Job.new(TestWorker),
+      Job.new(TestWorker),
+      Job.new(TestWorker),
+      %Job{ worker: TestWorker, id: :x, status: :failed },
+      Job.new(TestWorker),
+      Job.new(TestWorker)
+    ]
+
+    q = %{ running: [_, _, _, job | _] } =
+      %Queue{ queued: [], running: jobs }
+
+    assert job.id     == :x
+    assert job.status == :failed
+
+    job = %{ job | status: :completed }
+    %{ running: [_, _, _, job | _] } = Queue.update(q, job)
+
+    assert job.status == :completed
+  end
 end
 

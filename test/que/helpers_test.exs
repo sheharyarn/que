@@ -16,7 +16,7 @@ defmodule Que.Test.Helpers do
 
   @tag :pending
   test "#do_task works as expected" do
-    raise "pending test"
+    flunk "pending test"
   end
 
 end
