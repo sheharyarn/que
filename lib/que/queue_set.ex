@@ -10,6 +10,7 @@ defmodule Que.QueueSet do
   end
 
 
+
   @doc """
   Finds the Queue for a specified worker. If the queue does not
   exist, returns a new Queue for that worker.
@@ -19,11 +20,23 @@ defmodule Que.QueueSet do
   end
 
 
-  def add(job)
 
-  def update(job)
+  @doc """
+  Adds a Job to the appropriate Queue in a QueueSet
+  """
+  def add(%Que.QueueSet{} = qset, %Que.Job{} = job) do
+    q =
+      qset
+      |> Que.QueueSet.get(job.worker)
+      |> Que.Queue.push(job)
 
-  def find_by_ref(ref)
+    %{ qset | queues: Map.put(qset.queues, job.worker, q) }
+  end
+
+
+  def update(qset, job)
+
+  def find_by_ref(qset, ref)
 
   def load_incomplete
 
