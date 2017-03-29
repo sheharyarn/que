@@ -34,7 +34,21 @@ defmodule Que.QueueSet do
   end
 
 
-  def update(qset, job)
+
+  @doc """
+  Finds a Job in the QueueSet by the given Job's id and updates
+  (replaces) it with the specified Job
+  """
+  def update(%Que.QueueSet{} = qset, %Que.Job{} = job) do
+    q =
+      qset
+      |> Que.QueueSet.get(job.worker)
+      |> Que.Queue.update(job)
+
+    %{ qset | queues: Map.put(qset.queues, job.worker, q) }
+  end
+
+
 
   def find_by_ref(qset, ref)
 

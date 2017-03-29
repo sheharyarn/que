@@ -44,6 +44,20 @@ defmodule Que.Test.QueueSet do
   end
 
 
+  test "#update updates the job in the appropriate queue" do
+    job  = %Job{ id: :x, status: :queued, worker: TestWorker }
+    qset = QueueSet.add(sample_queue_set(), job)
+
+    [job] =
+      qset
+      |> QueueSet.update(%{ job | status: :failed })
+      |> QueueSet.get(TestWorker)
+      |> Map.get(:queued)
+
+    assert job.id     == :x
+    assert job.status == :failed
+  end
+
 
   ## Private
 
