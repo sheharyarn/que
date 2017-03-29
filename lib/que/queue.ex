@@ -42,7 +42,7 @@ defmodule Que.Queue do
 
 
   @doc """
-  Pops the next job in queue and returns a queue and job tuple
+  Pops the next Job in queue and returns a queue and Job tuple
   """
   def pop(%Que.Queue{queued: [ job | rest ]} = q) do
     { %{ q | queued: rest }, job }
@@ -50,6 +50,32 @@ defmodule Que.Queue do
 
   def pop(%Que.Queue{queued: []} = q) do
     { q, nil }
+  end
+
+
+
+  @doc """
+  Finds a Job in the Queue by the given Job's id, replaces it and
+  returns an updated Queue
+  """
+  def update(%Que.Queue{} = q, %Que.Job{} = job) do
+    queued_index = Enum.find_index(q.queued, &(&1.id == job.id))
+
+    if queued_index do
+      queued = List.replace_at(q.queued, queued_index, job)
+      %{ q | queued: queued }
+
+    else
+      running_index = Enum.find_index(q.running, &(&1.id == job.id))
+
+      if running_index do
+        running = List.replace_at(q.running, running_index, job)
+        %{ q | running: running }
+
+      else
+        raise "Job not found in Queue"
+      end
+    end
   end
 
 end
