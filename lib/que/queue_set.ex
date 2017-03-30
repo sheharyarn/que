@@ -64,8 +64,22 @@ defmodule Que.QueueSet do
 
 
 
-  def find_by_ref(qset, ref)
+  @doc """
+  Groups a list of Jobs into a proper QueueSet. All Jobs are loaded
+  only in the :queued list
+  """
+  def collect(jobs) when is_list(jobs) do
+    queues =
+      jobs
+      |> Enum.group_by(&(&1.worker))
+      |> Enum.map(fn {w, j} -> {w, Que.Queue.new(w, j)} end)
+      |> Enum.into(%{})
 
-  def load_incomplete
+    %Que.QueueSet{ queues: queues }
+  end
+
+
+
+  def find_by_ref(qset, ref)
 
 end
