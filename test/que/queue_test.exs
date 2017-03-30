@@ -105,30 +105,50 @@ defmodule Que.Test.Queue do
 
 
   test "#update updates a job in queued" do
-    jobs = [
-      Job.new(TestWorker),
-      Job.new(TestWorker),
-      Job.new(TestWorker),
-      %Job{ worker: TestWorker, id: :x, status: :queued },
-      Job.new(TestWorker),
-      Job.new(TestWorker)
-    ]
-
     q = %{ queued: [_, _, _, job | _] } =
-      %Queue{ queued: jobs, running: [] }
+      %Queue{ queued: sample_job_list(), running: [] }
 
     assert job.id     == :x
-    assert job.status == :queued
-
-    job = %{ job | status: :failed }
-    %{ queued: [_, _, _, job | _] } = Queue.update(q, job)
-
     assert job.status == :failed
+
+    %{ queued: [_, _, _, job | _] } =
+      Queue.update(q, %{ job | status: :queued })
+
+    assert job.status == :queued
   end
 
 
   test "#update updates a job in running" do
-    jobs = [
+    q = %{ running: [_, _, _, job | _] } =
+      %Queue{ queued: [], running: sample_job_list() }
+
+    assert job.id     == :x
+    assert job.status == :failed
+
+    %{ running: [_, _, _, job | _] } =
+      Queue.update(q, %{ job | status: :completed })
+
+    assert job.status == :completed
+  end
+
+
+  test "#remove deletes a job from running in Queue" do
+    q = %{ running: [_, _, _, job | _] } =
+      %Queue{ queued: [], running: sample_job_list() }
+
+    assert length(q.running) == 6
+
+    q = Queue.remove(q, job)
+
+    assert length(q.running) == 5
+    refute Enum.member?(q.running, job)
+  end
+
+
+  ## Private
+
+  defp sample_job_list do
+    [
       Job.new(TestWorker),
       Job.new(TestWorker),
       Job.new(TestWorker),
@@ -136,17 +156,6 @@ defmodule Que.Test.Queue do
       Job.new(TestWorker),
       Job.new(TestWorker)
     ]
-
-    q = %{ running: [_, _, _, job | _] } =
-      %Queue{ queued: [], running: jobs }
-
-    assert job.id     == :x
-    assert job.status == :failed
-
-    job = %{ job | status: :completed }
-    %{ running: [_, _, _, job | _] } = Queue.update(q, job)
-
-    assert job.status == :completed
   end
 end
 
