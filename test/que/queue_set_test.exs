@@ -59,6 +59,24 @@ defmodule Que.Test.QueueSet do
   end
 
 
+  test "#remove deletes the job from the running list of the worker queue" do
+    job  = %Job{ id: :x, status: :queued, worker: TestWorker }
+    q    = %Queue{ worker: TestWorker, queued: [], running: [job] }
+    qset = %QueueSet{ queues: %{ TestWorker => q} }
+
+    assert qset.queues[TestWorker].running == [job]
+
+    running =
+      qset
+      |> QueueSet.remove(job)
+      |> QueueSet.get(TestWorker)
+      |> Map.get(:running)
+
+    assert running == []
+  end
+
+
+
   ## Private
 
   defp sample_queue_set do

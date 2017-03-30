@@ -50,6 +50,20 @@ defmodule Que.QueueSet do
 
 
 
+  @doc """
+  Removes the specified job from the appropriate Queue's running list
+  """
+  def remove(%Que.QueueSet{} = qset, %Que.Job{} = job) do
+    q =
+      qset
+      |> Que.QueueSet.get(job.worker)
+      |> Que.Queue.remove(job)
+
+    %{ qset | queues: Map.put(qset.queues, job.worker, q) }
+  end
+
+
+
   def find_by_ref(qset, ref)
 
   def load_incomplete
