@@ -78,4 +78,19 @@ defmodule Que.Queue do
     end
   end
 
+
+
+  @doc """
+  Removes the specified Job from `running`
+  """
+  def remove(%Que.Queue{} = q, %Que.Job{} = job) do
+    index = Enum.find_index(q.running, &(&1.id == job.id))
+
+    if index do
+      %{ q | running: List.delete_at(q.running, index) }
+    else
+      raise "Job not found in Queue"
+    end
+  end
+
 end
