@@ -76,6 +76,25 @@ defmodule Que.Test.QueueSet do
   end
 
 
+  test "#collect groups a list of jobs into a QueueSet with proper queues" do
+    jobs = [
+      t1 = Job.new(TestWorker),
+      s1 = Job.new(SuccessWorker),
+      f1 = Job.new(FailureWorker),
+      t2 = Job.new(TestWorker),
+      s2 = Job.new(SuccessWorker),
+      f2 = Job.new(FailureWorker)
+    ]
+
+    qset = QueueSet.collect(jobs)
+
+    assert qset.queues == %{
+      TestWorker    => Queue.new(TestWorker,    [t1, t2]),
+      SuccessWorker => Queue.new(SuccessWorker, [s1, s2]),
+      FailureWorker => Queue.new(FailureWorker, [f1, f2])
+    }
+  end
+
 
   ## Private
 
