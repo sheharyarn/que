@@ -145,6 +145,16 @@ defmodule Que.Test.Queue do
   end
 
 
+  test "#remove raises an error if Job isn't in queue" do
+    assert_raise(RuntimeError, ~r/Job not found/, fn ->
+      job = Job.new(TestWorker)
+      q   = Queue.new(TestWorker)
+
+      Queue.remove(q, job)
+    end)
+  end
+
+
   ## Private
 
   defp sample_job_list do
