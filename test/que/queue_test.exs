@@ -105,6 +105,27 @@ defmodule Que.Test.Queue do
   end
 
 
+  test "#find finds the job by the given field" do
+    job =
+      TestWorker
+      |> Queue.new(sample_job_list())
+      |> Queue.find(:status, :failed)
+
+    assert job.id     == :x
+    assert job.status == :failed
+  end
+
+
+  test "#find returns nil when no results are found" do
+    job =
+      TestWorker
+      |> Queue.new(sample_job_list())
+      |> Queue.find(:y)
+
+    assert job == nil
+  end
+
+
   test "#update raises an error if the job doesn't exist in the queue" do
     assert_raise(RuntimeError, ~r/Job not found/, fn ->
       job = Job.new(TestWorker)
