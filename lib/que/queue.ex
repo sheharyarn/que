@@ -55,6 +55,16 @@ defmodule Que.Queue do
 
 
   @doc """
+  Finds the Job in Queue by the specified field name and value
+  """
+  def find(%Que.Queue{ queued: queued, running: running }, field \\ :id, value) do
+    Enum.find(queued,  &(Map.get(&1, field) == value)) ||
+    Enum.find(running, &(Map.get(&1, field) == value))
+  end
+
+
+
+  @doc """
   Finds a Job in the Queue by the given Job's id, replaces it and
   returns an updated Queue
   """
