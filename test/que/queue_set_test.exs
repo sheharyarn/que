@@ -96,6 +96,18 @@ defmodule Que.Test.QueueSet do
   end
 
 
+  test "#find finds a Job from a QueueSet according to specified key-value pair" do
+    job =
+      sample_queue_set()
+      |> QueueSet.add(%Job{ id: :x, ref: :xyz, worker: TestWorker })
+      |> QueueSet.find(:id, :x)
+
+    assert job.id     == :x
+    assert job.ref    == :xyz
+    assert job.worker == TestWorker
+  end
+
+
   ## Private
 
   defp sample_queue_set do

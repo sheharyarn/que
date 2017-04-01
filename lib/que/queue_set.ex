@@ -80,6 +80,15 @@ defmodule Que.QueueSet do
 
 
 
-  def find_by_ref(qset, ref)
+  @doc """
+  Finds a Job in a QueueSet by the specified key-value pair.
+
+  If no key is specified, it's assumed to be `:id`.
+  """
+  def find(%Que.QueueSet{ queues: queues }, key \\ :id, value) do
+    Enum.find_value(queues, fn {_, q} ->
+      Que.Queue.find(q, key, value)
+    end)
+  end
 
 end
