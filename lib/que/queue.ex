@@ -1,7 +1,7 @@
 defmodule Que.Queue do
   defstruct [:worker, :queued, :running]
 
-  @concurrency 1
+  @concurrency 2
 
 
   @doc """
