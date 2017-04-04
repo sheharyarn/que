@@ -27,4 +27,9 @@ defmodule Que.Worker do
     end
   end
 
+
+  def valid?(worker) do
+    ExUtils.Module.has_method?(worker, {:__que_worker__, 0})
+  end
+
 end
