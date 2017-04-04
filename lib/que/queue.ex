@@ -1,7 +1,7 @@
 defmodule Que.Queue do
   defstruct [:worker, :queued, :running]
 
-  @concurrency 4
+  @concurrency 1
 
 
   @doc """
@@ -19,8 +19,16 @@ defmodule Que.Queue do
 
   def process(%Que.Queue{running: running} = q) when length(running) < @concurrency do
     case pop(q) do
-      {q, nil} -> q
-      {q, job} -> %{ q | running: running ++ [Que.Job.perform(job)] }
+      {q, nil} ->
+        q
+
+      {q, job} ->
+        job =
+          job
+          |> Que.Job.perform
+          |> Que.Persistence.update
+
+        %{ q | running: running ++ [job] }
     end
   end
 
