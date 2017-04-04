@@ -55,11 +55,21 @@ defmodule Que.Queue do
 
 
   @doc """
-  Finds the Job in Queue by the specified field name and value
+  Finds the Job in Queue by the specified key name and value.
+
+  If no key is specified, it's assumed to be an `:id`. If the
+  specified key is a :ref, it only searches in the `:running`
+  list.
   """
-  def find(%Que.Queue{ queued: queued, running: running }, field \\ :id, value) do
-    Enum.find(queued,  &(Map.get(&1, field) == value)) ||
-    Enum.find(running, &(Map.get(&1, field) == value))
+  def find(queue, key \\ :id, value)
+
+  def find(%Que.Queue{ running: running }, :ref, value) do
+    Enum.find(running, &(Map.get(&1, :ref) == value))
+  end
+
+  def find(%Que.Queue{ running: running, queued: queued }, key, value) do
+    Enum.find(queued,  &(Map.get(&1, key) == value)) ||
+    Enum.find(running, &(Map.get(&1, key) == value))
   end
 
 
