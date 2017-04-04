@@ -65,6 +65,20 @@ defmodule Que.QueueSet do
 
 
   @doc """
+  Calles :process on all Queues in QueueSet
+  """
+  def process(%Que.QueueSet{ queues: queues } = qset) do
+    queues =
+      queues
+      |> Enum.map(fn {w, q} -> {w, Que.Queue.process(q)} end)
+      |> Enum.into(%{})
+
+    %{ qset | queues: queues }
+  end
+
+
+
+  @doc """
   Groups a list of Jobs into a proper QueueSet. All Jobs are loaded
   only in the :queued list
   """
