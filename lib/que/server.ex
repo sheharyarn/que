@@ -1,4 +1,4 @@
-defmodule Que.Handler do
+defmodule Que.Server do
   use GenServer
 
   @name      __MODULE__

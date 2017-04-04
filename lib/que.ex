@@ -32,6 +32,6 @@ defmodule Que do
   ```
   """
   @spec add(worker :: module, arguments :: term) :: :ok
-  defdelegate add(worker, arguments), to: Que.Handler
+  defdelegate add(worker, arguments), to: Que.Server
 end
 

@@ -12,7 +12,7 @@ defmodule Que.Supervisor do
   def init(:ok) do
     children = [
       supervisor(Task.Supervisor, [[name: Que.TaskSupervisor]]),
-      worker(Que.Handler, [])
+      worker(Que.Server, [])
     ]
 
     supervise(children, strategy: :one_for_one)
