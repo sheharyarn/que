@@ -127,7 +127,7 @@ defmodule Que.Test.Queue do
 
 
   test "#update raises an error if the job doesn't exist in the queue" do
-    assert_raise(RuntimeError, ~r/Job not found/, fn ->
+    assert_raise(Que.Error.JobNotFound, ~r/Job not found/, fn ->
       job = Job.new(TestWorker)
       q   = Queue.new(TestWorker)
 
@@ -178,7 +178,7 @@ defmodule Que.Test.Queue do
 
 
   test "#remove raises an error if Job isn't in queue" do
-    assert_raise(RuntimeError, ~r/Job not found/, fn ->
+    assert_raise(Que.Error.JobNotFound, ~r/Job not found/, fn ->
       job = Job.new(TestWorker)
       q   = Queue.new(TestWorker)
 

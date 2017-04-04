@@ -101,7 +101,7 @@ defmodule Que.Queue do
         %{ q | running: running }
 
       else
-        raise "Job not found in Queue"
+        raise Que.Error.JobNotFound, "Job not found in Queue"
       end
     end
   end
@@ -117,7 +117,7 @@ defmodule Que.Queue do
     if index do
       %{ q | running: List.delete_at(q.running, index) }
     else
-      raise "Job not found in Queue"
+      raise Que.Error.JobNotFound, "Job not found in Queue"
     end
   end
 
