@@ -3,8 +3,9 @@ defmodule Que.Mixfile do
 
   @app     :que
   @name    "Que"
-  @version "0.1.0-alpha.1"
+  @version "0.2.0"
   @github  "https://github.com/sheharyarn/#{@app}"
+
 
   def project do
     [
@@ -28,12 +29,14 @@ defmodule Que.Mixfile do
     ]
   end
 
+
   def application do
     [
       mod: {Que, []},
       applications: [:logger, :amnesia]
     ]
   end
+
 
   defp deps do
     [
@@ -44,9 +47,11 @@ defmodule Que.Mixfile do
     ]
   end
 
+
   defp description do
     "Background Job Processor for Elixir"
   end
+
 
   defp package do
     [
