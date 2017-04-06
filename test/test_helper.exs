@@ -43,8 +43,8 @@ defmodule Que.Test.Meta do
 
   defmodule Helpers do
 
-    # Sleeps for 10ms
-    def wait(ms \\ 10) do
+    # Sleeps for 2ms
+    def wait(ms \\ 2) do
       :timer.sleep(ms)
     end
 
