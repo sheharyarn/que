@@ -3,8 +3,10 @@ defmodule Que.Test.Queue do
 
   alias Que.Job
   alias Que.Queue
+
   alias Que.Test.Meta.Helpers
   alias Que.Test.Meta.TestWorker
+  alias Que.Test.Meta.ConcurrentWorker
 
 
   test "#new builds a new job queue with defaults" do
@@ -91,6 +93,38 @@ defmodule Que.Test.Queue do
     assert q_after         == q_before
     assert q_after.queued  == []
     assert q_after.running == []
+  end
+
+
+  test "#process concurrently runs the specified no. of jobs" do
+    capture = Helpers.capture_log(fn ->
+      jobs =
+        for i <- 1..4, do: Job.new(ConcurrentWorker, :"job_#{i}")
+
+      q =
+        ConcurrentWorker
+        |> Queue.new(jobs)
+        |> Queue.process
+        |> Queue.process
+        |> Queue.process
+        |> Queue.process
+
+      assert [] == q.queued
+      assert 4  == length(q.running)
+
+      Enum.each(q.running, fn j ->
+        assert %Job{status: :started} = j
+      end)
+
+      Helpers.wait
+    end)
+
+    assert capture =~ ~r/Starting/
+
+    assert capture =~ ~r/perform: :job_1/
+    assert capture =~ ~r/perform: :job_2/
+    assert capture =~ ~r/perform: :job_3/
+    assert capture =~ ~r/perform: :job_4/
   end
 
 
