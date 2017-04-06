@@ -4,6 +4,7 @@ defmodule Que.Test.Worker do
   alias Que.Test.Meta.TestWorker
   alias Que.Test.Meta.SuccessWorker
   alias Que.Test.Meta.FailureWorker
+  alias Que.Test.Meta.ConcurrentWorker
 
 
   test "compilation fails if the worker doesn't export a perform/1 method" do
@@ -41,12 +42,6 @@ defmodule Que.Test.Worker do
 
 
   test "#concurrency returns the concurrency option specified" do
-    defmodule ConcurrentWorker do
-      use Que.Worker, concurrency: 4
-
-      def perform(_), do: nil
-    end
-
     assert ConcurrentWorker.concurrency == 4
   end
 

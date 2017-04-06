@@ -17,6 +17,13 @@ defmodule Que.Test.Meta do
   end
 
 
+  defmodule ConcurrentWorker do
+    use Que.Worker, concurrency: 4
+
+    def perform(args), do: Logger.debug("#{__MODULE__} - perform: #{inspect(args)}")
+  end
+
+
   defmodule SuccessWorker do
     use Que.Worker
 
