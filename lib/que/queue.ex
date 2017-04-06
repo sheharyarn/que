@@ -1,8 +1,6 @@
 defmodule Que.Queue do
   defstruct [:worker, :queued, :running]
 
-  @concurrency 2
-
 
   @doc """
   Returns a new processable Queue with defaults
@@ -17,22 +15,28 @@ defmodule Que.Queue do
 
 
 
-  def process(%Que.Queue{running: running} = q) when length(running) < @concurrency do
-    case pop(q) do
-      {q, nil} ->
-        q
+  @doc """
+  Processes the Queue and runs pending jobs
+  """
+  def process(%Que.Queue{running: running, worker: worker} = q) do
+    if (length(running) < worker.concurrency) do
+      case pop(q) do
+        {q, nil} ->
+          q
 
-      {q, job} ->
-        job =
-          job
-          |> Que.Job.perform
-          |> Que.Persistence.update
+        {q, job} ->
+          job =
+            job
+            |> Que.Job.perform
+            |> Que.Persistence.update
 
-        %{ q | running: running ++ [job] }
+          %{ q | running: running ++ [job] }
+      end
+
+    else
+      q
     end
   end
-
-  def process(queue), do: queue
 
 
 
