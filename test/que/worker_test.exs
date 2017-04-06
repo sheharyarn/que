@@ -32,4 +32,23 @@ defmodule Que.Test.Worker do
     refute Que.Worker.valid?(NonExistentModule)
   end
 
+
+  test "#concurrency returns 1 when no options are specified" do
+    assert TestWorker.concurrency    == 1
+    assert SuccessWorker.concurrency == 1
+    assert FailureWorker.concurrency == 1
+  end
+
+
+  test "#concurrency returns the concurrency option specified" do
+    defmodule ConcurrentWorker do
+      use Que.Worker, concurrency: 4
+
+      def perform(_), do: nil
+    end
+
+    assert ConcurrentWorker.concurrency == 4
+  end
+
 end
+
