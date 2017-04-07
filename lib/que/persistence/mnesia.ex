@@ -19,9 +19,8 @@ defmodule Que.Persistence.Mnesia do
   defdatabase DB do
     @moduledoc false
 
-    deftable Jobs, [{:id, autoincrement}, :uuid, :arguments, :worker, :status, :ref, :pid],
-      type:  :ordered_set,
-      index: [:uuid, :worker, :ref] do
+    deftable Jobs, [{:id, autoincrement}, :arguments, :worker, :status, :ref, :pid, :created_at, :updated_at],
+      type:  :ordered_set do
 
       @store     __MODULE__
       @moduledoc false
@@ -74,18 +73,21 @@ defmodule Que.Persistence.Mnesia do
 
       @doc "Inserts a new Que.Job in to DB"
       def create_job(job) do
-        Amnesia.transaction do
-          job
-          |> to_db_job
-          |> write
-          |> to_que_job
-        end
+        job
+        |> Map.put(:created_at, Time.utc_now)
+        |> update_job
       end
 
 
       @doc "Updates existing Que.Job in DB"
       def update_job(job) do
-        create_job(job)
+        Amnesia.transaction do
+          job
+          |> Map.put(:updated_at, Time.utc_now)
+          |> to_db_job
+          |> write
+          |> to_que_job
+        end
       end
 
 

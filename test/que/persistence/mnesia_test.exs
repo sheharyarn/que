@@ -9,6 +9,7 @@ defmodule Que.Test.Persistence.Mnesia do
   alias Que.Test.Meta.SuccessWorker
   alias Que.Test.Meta.FailureWorker
 
+
   setup do
     Helpers.Mnesia.reset
   end

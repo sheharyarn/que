@@ -1,5 +1,5 @@
 defmodule Que.Job do
-  defstruct  [:id, :uuid, :arguments, :worker, :status, :ref, :pid]
+  defstruct  [:id, :arguments, :worker, :status, :ref, :pid, :created_at, :updated_at]
   ## Note: Update Que.Persistence.Mnesia after changing these values
 
 
@@ -18,10 +18,9 @@ defmodule Que.Job do
   """
   def new(worker, args \\ nil) do
     %Que.Job{
-      uuid:       UUID.uuid4(),
-      status:     :queued,
-      worker:     worker,
-      arguments:  args
+      status:    :queued,
+      worker:    worker,
+      arguments: args
     }
   end
 
