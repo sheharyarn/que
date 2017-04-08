@@ -74,7 +74,7 @@ defmodule Que.Persistence.Mnesia do
       @doc "Inserts a new Que.Job in to DB"
       def create_job(job) do
         job
-        |> Map.put(:created_at, Time.utc_now)
+        |> Map.put(:created_at, NaiveDateTime.utc_now)
         |> update_job
       end
 
@@ -83,7 +83,7 @@ defmodule Que.Persistence.Mnesia do
       def update_job(job) do
         Amnesia.transaction do
           job
-          |> Map.put(:updated_at, Time.utc_now)
+          |> Map.put(:updated_at, NaiveDateTime.utc_now)
           |> to_db_job
           |> write
           |> to_que_job
