@@ -40,9 +40,10 @@ defmodule Que.Mixfile do
 
   defp deps do
     [
-      {:amnesia,    "~> 0.2"   },
-      {:ex_utils,   ">= 0.0.0" },
-      {:ex_doc,     ">= 0.0.0", only: :dev}
+      {:amnesia,  "~> 0.2"                },
+      {:ex_utils, ">= 0.0.0"              },
+      {:ex_doc,   ">= 0.0.0", only: :dev  },
+      {:inch_ex,  ">= 0.0.0", only: :docs }
     ]
   end
 
