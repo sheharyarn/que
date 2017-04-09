@@ -1,20 +1,27 @@
 defmodule Que.Server do
   use GenServer
 
-  @name      __MODULE__
-  @moduledoc false
+  @name __MODULE__
+
+
+  @moduledoc """
+  `#{@name}` is the GenServer responsible for processing all Jobs.
+
+  This GenServer oversees the Workers performing their Jobs and handles
+  their success and failure callbacks. You shouldn't call any of this
+  module's methods directly. Instead use the methods exported by the
+  base `Que` module.
+  """
 
 
 
+  @doc """
+  Starts the Job Server
+  """
   def start_link do
     GenServer.start_link(@name, :ok, name: @name)
   end
 
-
-  def add(worker, arg) do
-    validate_worker!(worker)
-    GenServer.call(@name, {:add_job, worker, arg})
-  end
 
 
 
@@ -22,7 +29,20 @@ defmodule Que.Server do
   ## ------------------
 
 
+  # Validates worker and creates a new job with the passed
+  # arguments. Use Que.add instead of directly calling this
+
+  @doc false
+  def add(worker, arg) do
+    validate_worker!(worker)
+    GenServer.call(@name, {:add_job, worker, arg})
+  end
+
+
+
   # Initial State with Empty Queue and a list of currently running jobs
+
+  @doc false
   def init(:ok) do
     Que.Persistence.initialize
     existing_jobs = Que.QueueSet.collect(Que.Persistence.incomplete)
@@ -31,7 +51,10 @@ defmodule Que.Server do
   end
 
 
+
   # Pushes a new Job to the queue and processes it
+
+  @doc false
   def handle_call({:add_job, worker, args}, _from, qset) do
     Que.Helpers.log("Queued new Job for #{ExUtils.Module.name(worker)}")
 
@@ -49,8 +72,11 @@ defmodule Que.Server do
   end
 
 
+
   # Job was completed successfully - Does cleanup and executes the Success
   # callback on the Worker
+
+  @doc false
   def handle_info({:DOWN, ref, :process, _pid, :normal}, qset) do
     job =
       qset
@@ -67,7 +93,10 @@ defmodule Que.Server do
   end
 
 
+
   # Job failed / crashed - Does cleanup and executes the Error callback
+
+  @doc false
   def handle_info({:DOWN, ref, :process, _pid, err}, qset) do
     job =
       qset
@@ -84,7 +113,9 @@ defmodule Que.Server do
   end
 
 
-  # Verify that the worker is a valid one, otherwise raise an error
+
+  # Verifies that the worker is valid, otherwise raises an error
+
   defp validate_worker!(worker) do
     if Que.Worker.valid?(worker) do
       :ok
