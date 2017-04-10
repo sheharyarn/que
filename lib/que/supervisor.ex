@@ -1,14 +1,24 @@
 defmodule Que.Supervisor do
   use Supervisor
 
-  @moduledoc false
-  # Module meant for internal use. Should be started as part of
-  # the Que application.
+  @moduledoc """
+  This is the `Supervisor` responsible for overseeing the entire
+  `Que` application. You shouldn't start this manually unless
+  you absolutely know what you're doing.
+  """
 
+
+
+  @doc """
+  Starts the Supervision Tree for `Que`
+  """
   def start_link do
     Supervisor.start_link(__MODULE__, :ok, name: __MODULE__)
   end
 
+
+
+  @doc false
   def init(:ok) do
     children = [
       supervisor(Task.Supervisor, [[name: Que.TaskSupervisor]]),
@@ -17,5 +27,5 @@ defmodule Que.Supervisor do
 
     supervise(children, strategy: :one_for_one)
   end
-end
 
+end
