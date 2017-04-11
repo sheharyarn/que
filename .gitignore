@@ -18,3 +18,5 @@ erl_crash.dump
 
 # Mnesia DB
 Mnesia.nonode@nohost
+mnesia
+

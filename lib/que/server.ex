@@ -5,7 +5,7 @@ defmodule Que.Server do
 
 
   @moduledoc """
-  `#{@name}` is the `GenServer` responsible for processing all Jobs.
+  `Que.Server` is the `GenServer` responsible for processing all Jobs.
 
   This `GenServer` oversees the Workers performing their Jobs and handles
   their success and failure callbacks. You shouldn't call any of this
