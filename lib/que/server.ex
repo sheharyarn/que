@@ -5,9 +5,9 @@ defmodule Que.Server do
 
 
   @moduledoc """
-  `#{@name}` is the GenServer responsible for processing all Jobs.
+  `#{@name}` is the `GenServer` responsible for processing all Jobs.
 
-  This GenServer oversees the Workers performing their Jobs and handles
+  This `GenServer` oversees the Workers performing their Jobs and handles
   their success and failure callbacks. You shouldn't call any of this
   module's methods directly. Instead use the methods exported by the
   base `Que` module.
@@ -18,6 +18,7 @@ defmodule Que.Server do
   @doc """
   Starts the Job Server
   """
+  @spec start_link() :: GenServer.on_start
   def start_link do
     GenServer.start_link(@name, :ok, name: @name)
   end
