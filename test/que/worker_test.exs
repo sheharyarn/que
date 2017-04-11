@@ -34,6 +34,24 @@ defmodule Que.Test.Worker do
   end
 
 
+  test "#validate! returns :ok for proper workers" do
+    assert Que.Worker.validate!(TestWorker)    == :ok
+    assert Que.Worker.validate!(SuccessWorker) == :ok
+    assert Que.Worker.validate!(FailureWorker) == :ok
+  end
+
+
+  test "#validate! raises an error for invalid workers" do
+    assert_raise(Que.Error.InvalidWorker, ~r/Invalid Worker/, fn ->
+      Que.Worker.validate!(NotARealWorker)
+    end)
+
+    assert_raise(Que.Error.InvalidWorker, ~r/Invalid Worker/, fn ->
+      Que.Worker.validate!(NonExistentModule)
+    end)
+  end
+
+
   test "#concurrency returns 1 when no options are specified" do
     assert TestWorker.concurrency    == 1
     assert SuccessWorker.concurrency == 1
