@@ -24,4 +24,23 @@ defmodule Que.Test.Server do
 
     assert capture =~ ~r/perform: :yo/
   end
+
+
+  test "loads and processes existing jobs when app starts" do
+    Helpers.App.stop
+
+    1..4
+    |> Enum.map(&Que.Job.new(TestWorker, :"job_#{&1}"))
+    |> Enum.map(&Que.Persistence.insert/1)
+
+    capture = Helpers.capture_log(fn ->
+      Helpers.App.start
+      Helpers.wait
+    end)
+
+    assert capture =~ ~r/perform: :job_1/
+    assert capture =~ ~r/perform: :job_2/
+    assert capture =~ ~r/perform: :job_3/
+    assert capture =~ ~r/perform: :job_4/
+  end
 end
