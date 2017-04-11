@@ -35,7 +35,7 @@ defmodule Que.Server do
 
   @doc false
   def add(worker, arg) do
-    validate_worker!(worker)
+    Que.Worker.validate!(worker)
     GenServer.call(@name, {:add_job, worker, arg})
   end
 
@@ -115,18 +115,6 @@ defmodule Que.Server do
       |> Que.QueueSet.process
 
     {:noreply, qset}
-  end
-
-
-
-  # Verifies that the worker is valid, otherwise raises an error
-
-  defp validate_worker!(worker) do
-    if Que.Worker.valid?(worker) do
-      :ok
-    else
-      raise Que.Error.InvalidWorker, "#{ExUtils.Module.name(worker)} is an Invalid Worker"
-    end
   end
 
 end

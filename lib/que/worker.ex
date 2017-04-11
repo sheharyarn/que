@@ -64,8 +64,8 @@ defmodule Que.Worker do
     end
   end
   ```
-
   """
+
 
 
   @doc """
@@ -91,6 +91,20 @@ defmodule Que.Worker do
   @spec valid?(module :: module) :: boolean
   def valid?(module) do
     ExUtils.Module.has_method?(module, {:__que_worker__, 0})
+  end
+
+
+
+  @doc """
+  Raises an error if the passed module is not a valid `Que.Worker`
+  """
+  @spec validate!(module :: module) :: :ok | no_return
+  def validate!(module) do
+    if Que.Worker.valid?(module) do
+      :ok
+    else
+      raise Que.Error.InvalidWorker, "#{ExUtils.Module.name(module)} is an Invalid Worker"
+    end
   end
 
 
