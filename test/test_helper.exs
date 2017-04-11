@@ -51,7 +51,7 @@ defmodule Que.Test.Meta do
   defmodule Helpers do
 
     # Sleeps for 2ms
-    def wait(ms \\ 2) do
+    def wait(ms \\ 3) do
       :timer.sleep(ms)
     end
 
