@@ -73,6 +73,33 @@ defmodule Que.Test.Meta do
   end
 
 
+
+  # App-specific helpers
+  # ====================
+
+  defmodule Helpers.App do
+
+    # Restarts app and resets DB
+    def reset do
+      stop()
+      Helpers.Mnesia.reset
+      start()
+      :ok
+    end
+
+    def start do
+      Application.start(:que)
+    end
+
+    def stop do
+      Helpers.capture_log(fn ->
+        Application.stop(:que)
+      end)
+    end
+  end
+
+
+
   # Mnesia-specific helpers
   # =======================
 
@@ -97,6 +124,7 @@ defmodule Que.Test.Meta do
       ] |> Enum.map(&Que.Persistence.Mnesia.insert/1)
     end
   end
+
 end
 
 
