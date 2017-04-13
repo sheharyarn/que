@@ -42,6 +42,13 @@ defmodule Que.Test.Persistence.Mnesia do
   end
 
 
+  test "#failed returns only failed jobs" do
+    [_, _, f | _] = Helpers.Mnesia.create_sample_jobs
+
+    assert Mnesia.failed == [f]
+  end
+
+
   test "#find gets a job by its id" do
     [_, _, _, s | _] = Helpers.Mnesia.create_sample_jobs
 
