@@ -19,6 +19,8 @@ defmodule Que.Queue do
   Processes the Queue and runs pending jobs
   """
   def process(%Que.Queue{running: running, worker: worker} = q) do
+    Que.Worker.validate!(worker)
+
     if (length(running) < worker.concurrency) do
       case pop(q) do
         {q, nil} ->
