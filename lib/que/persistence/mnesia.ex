@@ -47,7 +47,7 @@ defmodule Que.Persistence.Mnesia do
       @doc "Find Incomplete Jobs"
       def find_incomplete_jobs do
         Amnesia.transaction do
-          where(status != :completed) |> parse_selection
+          where(status == :queued or status == :started) |> parse_selection
         end
       end
 

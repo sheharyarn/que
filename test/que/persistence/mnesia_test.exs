@@ -35,10 +35,10 @@ defmodule Que.Test.Persistence.Mnesia do
   end
 
 
-  test "#incomplete returns all jobs not marked as completed" do
-    [_, _, f, s, q1, q2] = Helpers.Mnesia.create_sample_jobs
+  test "#incomplete returns queued and started jobs" do
+    [_, _, _, s, q1, q2] = Helpers.Mnesia.create_sample_jobs
 
-    assert Mnesia.incomplete == [f, s, q1, q2]
+    assert Mnesia.incomplete == [s, q1, q2]
   end
 
 
