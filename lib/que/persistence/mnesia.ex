@@ -161,4 +161,9 @@ defmodule Que.Persistence.Mnesia do
   defdelegate insert(job),        to: @store,   as: :create_job
   defdelegate update(job),        to: @store,   as: :update_job
   defdelegate destroy(job),       to: @store,   as: :delete_job
+
+
+  def __config__ do
+    [database: @db, table: @store]
+  end
 end
