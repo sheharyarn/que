@@ -11,7 +11,7 @@ Add `que` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:que, "~> 0.1.0-alpha.1"}]
+  [{:que, "~> 0.3.0"}]
 end
 ```
 
