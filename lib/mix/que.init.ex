@@ -5,21 +5,7 @@ defmodule Mix.Tasks.Que.Init do
 
 
   def run(_) do
-    # Get Database Name
-    database =
-      Que.Persistence.Mnesia.__config__
-      |> Keyword.get(:database)
-      |> ExUtils.Module.name
-
-
-    # Create the DB directory (if custom path given)
-    if path = Application.get_env(:mnesia, :dir) do
-      :ok = File.mkdir_p!(path)
-    end
-
-
-    # Finally create the Mnesia DB on Disk
-    Mix.Tasks.Amnesia.Create.run(~w|-d #{database} --disk|)
+    Que.Persistence.Mnesia.setup!
   end
 
 end

@@ -16,6 +16,26 @@ defmodule Que.Persistence.Mnesia do
   end
 
 
+  @doc "Persist the Mnesia DB to Disk"
+  def setup! do
+    nodes = [node()]
+
+    # Create the DB directory (if custom path given)
+    if path = Application.get_env(:mnesia, :dir) do
+      :ok = File.mkdir_p!(path)
+    end
+
+    # Create the Schema
+    Amnesia.stop
+    Amnesia.Schema.create(nodes)
+    Amnesia.start
+
+    # Create the DB with Disk Copies
+    @db.create!(disk: nodes)
+    @db.wait(15000)
+  end
+
+
   defdatabase DB do
     @moduledoc false
 
