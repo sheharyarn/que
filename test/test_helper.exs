@@ -61,14 +61,17 @@ defmodule Que.Test.Meta do
     end
 
     # Captures logged text to IO
-    def capture_log(level \\ :debug, fun) do
-      Logger.configure(level: level)
-      ExUnit.CaptureIO.capture_io(:user, fn ->
-        fun.()
-        Logger.flush()
+    def capture_log(fun) do
+      ExUnit.CaptureLog.capture_log(fun)
+    end
+
+    # Captures everything
+    def capture_all(fun) do
+      capture_io(fn ->
+        IO.puts capture_log(fn ->
+          fun |> capture_io |> IO.puts
+        end)
       end)
-    after
-      Logger.configure(level: :debug)
     end
   end
 
