@@ -15,6 +15,27 @@ defmodule Que.Test.Persistence.Mnesia do
   end
 
 
+  test "#setup! creates a Schema and persists the Mnesia DB to disk" do
+    config  = Mnesia.__config__
+    db_path = Path.expand(Application.get_env(:mnesia, :dir))
+    capture = Helpers.capture_io(&:mnesia.info/0)
+
+    assert capture =~ ~r/Directory "#{db_path}" is NOT used/
+    assert capture =~ ~r/ram_copies\s+=.+#{config[:database]}.+#{config[:table]}/s
+
+    capture = Helpers.capture_all(fn ->
+      assert :ok == Mnesia.setup!
+      :mnesia.info
+
+      Amnesia.stop
+      File.rm_rf!(db_path)
+      Amnesia.start
+    end)
+
+    assert capture =~ ~r/Directory "#{db_path}" is used/
+    assert capture =~ ~r/disc_copies\s+=.+#{config[:database]}.+#{config[:table]}/s
+  end
+
 
   test "#all returns empty list when there are no jobs in DB" do
     assert Mnesia.all == []

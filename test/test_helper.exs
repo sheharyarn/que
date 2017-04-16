@@ -68,11 +68,10 @@ defmodule Que.Test.Meta do
     # Captures everything
     def capture_all(fun) do
       capture_io(fn ->
-        IO.puts capture_log(fn ->
-          fun |> capture_io |> IO.puts
-        end)
+        IO.puts capture_log(fn -> fun |> capture_io |> IO.puts end)
       end)
     end
+
   end
 
 
