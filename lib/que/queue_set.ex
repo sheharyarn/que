@@ -2,6 +2,11 @@ defmodule Que.QueueSet do
   defstruct queues: %{}
 
 
+  @typedoc  "A `Que.QueueSet` struct"
+  @type     t :: %Que.QueueSet{}
+
+
+
   @doc """
   Returns a new QueueSet with defaults
   """

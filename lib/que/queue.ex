@@ -2,6 +2,11 @@ defmodule Que.Queue do
   defstruct [:worker, :queued, :running]
 
 
+  @typedoc  "A `Que.Queue` struct"
+  @type     t :: %Que.Queue{}
+
+
+
   @doc """
   Returns a new processable Queue with defaults
   """

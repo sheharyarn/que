@@ -3,19 +3,30 @@ defmodule Que.Job do
   ## Note: Update Que.Persistence.Mnesia after changing these values
 
 
-  ## Module definition for Que.Job struct to manage a Job's state.
-  ## Meant for internal usage, and not for the Public API.
+  @moduledoc """
+  Module to manage a Job's state and execute the worker's callbacks.
+
+  Defines a `Que.Job` struct an keeps track of the Job's worker, arguments,
+  status and more. Meant for internal usage, so you shouldn't use this
+  unless you absolutely know what you're doing.
+  """
+
 
 
   @statuses [:queued, :started, :failed, :completed]
   @typedoc  "One of the atoms in `#{inspect(@statuses)}`"
   @type     status :: atom
 
+  @typedoc  "A `Que.Job` struct"
+  @type     t :: %Que.Job{}
+
+
 
 
   @doc """
   Returns a new Job struct with defaults
   """
+  @spec new(worker :: Que.Worker.t, args :: list) :: Que.Job.t
   def new(worker, args \\ nil) do
     %Que.Job{
       status:    :queued,

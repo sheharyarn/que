@@ -68,6 +68,11 @@ defmodule Que.Worker do
 
 
 
+  @typedoc "A valid worker module"
+  @type    t :: module
+
+
+
   @doc """
   Checks if the specified module is a valid Que Worker
 
