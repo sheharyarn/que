@@ -40,6 +40,7 @@ defmodule Que.Job do
   @doc """
   Update the Job status to one of the predefined values in `@statuses`
   """
+  @spec set_status(job :: Que.Job.t, status :: status) :: Que.Job.t
   def set_status(job, status) when status in @statuses do
     %{ job | status: status }
   end
@@ -51,6 +52,7 @@ defmodule Que.Job do
   under the TaskSupervisor which executes the perform method with supplied
   arguments
   """
+  @spec perform(job :: Que.Job.t) :: Que.Job.t
   def perform(job) do
     Que.Helpers.log("Starting #{job}")
 
@@ -68,6 +70,7 @@ defmodule Que.Job do
   Handles Job Success, Calls appropriate worker method and updates the job
   status to :completed
   """
+  @spec handle_success(job :: Que.Job.t) :: Que.Job.t
   def handle_success(job) do
     Que.Helpers.log("Completed #{job}")
 
@@ -84,11 +87,12 @@ defmodule Que.Job do
   Handles Job Failure, Calls appropriate worker method and updates the job
   status to :failed
   """
-  def handle_failure(job, err) do
+  @spec handle_failure(job :: Que.Job.t, error :: term) :: Que.Job.t
+  def handle_failure(job, error) do
     Que.Helpers.log("Failed #{job}")
 
     Que.Helpers.do_task(fn ->
-      job.worker.on_failure(job.arguments, err)
+      job.worker.on_failure(job.arguments, error)
     end)
 
     %{ job | status: :failed, pid: nil, ref: nil }
