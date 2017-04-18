@@ -15,6 +15,7 @@ defmodule Que.Server do
 
 
 
+
   @doc """
   Starts the Job Server
   """
@@ -41,6 +42,7 @@ defmodule Que.Server do
 
 
 
+
   # Initial State with Empty Queue and a list of currently running jobs
 
   @doc false
@@ -54,6 +56,7 @@ defmodule Que.Server do
 
     {:ok, existing_jobs}
   end
+
 
 
 
@@ -78,6 +81,7 @@ defmodule Que.Server do
 
 
 
+
   # Job was completed successfully - Does cleanup and executes the Success
   # callback on the Worker
 
@@ -96,6 +100,7 @@ defmodule Que.Server do
 
     {:noreply, qset}
   end
+
 
 
 

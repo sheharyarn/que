@@ -9,6 +9,7 @@ defmodule Que.Supervisor do
 
 
 
+
   @doc """
   Starts the Supervision Tree for `Que`
   """
@@ -16,6 +17,7 @@ defmodule Que.Supervisor do
   def start_link do
     Supervisor.start_link(__MODULE__, :ok, name: __MODULE__)
   end
+
 
 
 
