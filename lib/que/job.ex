@@ -12,7 +12,6 @@ defmodule Que.Job do
   """
 
 
-
   @statuses [:queued, :started, :failed, :completed]
   @typedoc  "One of the atoms in `#{inspect(@statuses)}`"
   @type     status :: atom
