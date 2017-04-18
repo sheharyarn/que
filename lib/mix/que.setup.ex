@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.Que.Init do
+defmodule Mix.Tasks.Que.Setup do
   use Mix.Task
 
   @shortdoc "Creates an Mnesia DB on disk for Que"
