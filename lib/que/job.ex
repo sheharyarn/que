@@ -36,6 +36,7 @@ defmodule Que.Job do
 
 
 
+
   @doc """
   Update the Job status to one of the predefined values in `@statuses`
   """
@@ -43,6 +44,7 @@ defmodule Que.Job do
   def set_status(job, status) when status in @statuses do
     %{ job | status: status }
   end
+
 
 
 
@@ -65,6 +67,7 @@ defmodule Que.Job do
 
 
 
+
   @doc """
   Handles Job Success, Calls appropriate worker method and updates the job
   status to :completed
@@ -79,6 +82,7 @@ defmodule Que.Job do
 
     %{ job | status: :completed, pid: nil, ref: nil }
   end
+
 
 
 
@@ -100,8 +104,10 @@ end
 
 
 
+
+## Implementing the String.Chars protocol for Que.Job structs
+
 defimpl String.Chars, for: Que.Job do
-  ## Implementing the String.Chars protocol for Que.Job structs
 
   def to_string(job) do
     "Job # #{job.id} with #{ExUtils.Module.name(job.worker)}"
