@@ -73,6 +73,7 @@ defmodule Que.Worker do
 
 
 
+
   @doc """
   Checks if the specified module is a valid Que Worker
 
@@ -100,6 +101,7 @@ defmodule Que.Worker do
 
 
 
+
   @doc """
   Raises an error if the passed module is not a valid `Que.Worker`
   """
@@ -111,6 +113,7 @@ defmodule Que.Worker do
       raise Que.Error.InvalidWorker, "#{ExUtils.Module.name(module)} is an Invalid Worker"
     end
   end
+
 
 
 
@@ -149,6 +152,7 @@ defmodule Que.Worker do
 
 
 
+
   @doc """
   Main callback that processes the Job.
 
@@ -164,11 +168,13 @@ defmodule Que.Worker do
 
 
 
+
   @doc """
   Optional callback that is executed when the job is processed
   successfully.
   """
   @callback on_success(arguments :: term) :: term
+
 
 
 

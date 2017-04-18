@@ -35,6 +35,7 @@ defmodule Que.Queue do
 
 
 
+
   @doc """
   Processes the Queue and runs pending jobs
   """
@@ -63,6 +64,7 @@ defmodule Que.Queue do
 
 
 
+
   @doc """
   Pushes one or more Jobs to the `queued` list
   """
@@ -77,6 +79,7 @@ defmodule Que.Queue do
 
 
 
+
   @doc """
   Pops the next Job in queue and returns a queue and Job tuple
   """
@@ -88,6 +91,7 @@ defmodule Que.Queue do
   def pop(%Que.Queue{queued: []} = q) do
     { q, nil }
   end
+
 
 
 
@@ -109,6 +113,7 @@ defmodule Que.Queue do
     Enum.find(queued,  &(Map.get(&1, key) == value)) ||
     Enum.find(running, &(Map.get(&1, key) == value))
   end
+
 
 
 
@@ -136,6 +141,7 @@ defmodule Que.Queue do
       end
     end
   end
+
 
 
 

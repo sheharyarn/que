@@ -22,6 +22,7 @@ defmodule Que.QueueSet do
 
 
 
+
   @doc """
   Returns a new QueueSet with defaults
   """
@@ -29,6 +30,7 @@ defmodule Que.QueueSet do
   def new do
     %Que.QueueSet{}
   end
+
 
 
 
@@ -40,6 +42,7 @@ defmodule Que.QueueSet do
   def get(%Que.QueueSet{} = qset, worker) do
     qset.queues[worker] || Que.Queue.new(worker)
   end
+
 
 
 
@@ -55,6 +58,7 @@ defmodule Que.QueueSet do
 
     %{ qset | queues: Map.put(qset.queues, job.worker, q) }
   end
+
 
 
 
@@ -74,6 +78,7 @@ defmodule Que.QueueSet do
 
 
 
+
   @doc """
   Removes the specified job from the appropriate Queue's running list
   """
@@ -86,6 +91,7 @@ defmodule Que.QueueSet do
 
     %{ qset | queues: Map.put(qset.queues, job.worker, q) }
   end
+
 
 
 
@@ -104,6 +110,7 @@ defmodule Que.QueueSet do
 
 
 
+
   @doc """
   Groups a list of Jobs into a proper QueueSet. All Jobs are loaded
   only in the :queued list
@@ -118,6 +125,7 @@ defmodule Que.QueueSet do
 
     %Que.QueueSet{ queues: queues }
   end
+
 
 
 
