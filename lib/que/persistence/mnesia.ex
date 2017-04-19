@@ -2,6 +2,45 @@ defmodule Que.Persistence.Mnesia do
   use Que.Persistence
   use Amnesia
 
+
+  @moduledoc """
+  Mnesia adapter to persist `Que.Job`s
+
+  This module defines a Database and a Job Table in Mnesia to keep
+  track of all Jobs, along with Mnesia transaction methods that
+  provide an easy way to find, insert, update or destroy Jobs from
+  the Database.
+
+  It implements all callbacks defined in `Que.Persistence`, along
+  with some `Mnesia` specific ones. You should read the
+  `Que.Persistence` documentation if you just want to interact
+  with the Jobs in database.
+
+
+  ## Persisting to Disk
+
+  `Que` works out of the box without any configuration needed, but
+  initially all Jobs are not persisted to disk, and are only in
+  memory. You'll need to create the Mnesia Schema on disk and create
+  the Job Database for this to work.
+
+  Que provides ways that automatically do this for you. First,
+  specify the location where you want your Mnesia database to be
+  created in your `config.exs` file. It's highly recommended that you
+  specify your `Mix.env` in the path to keep development, test and
+  production databases separate.
+
+  ```
+  config :mnesia, dir: 'mnesia/\#{Mix.env}/\#{node()}'
+  # Notice the single quotes
+  ```
+
+  You can now either run the `Mix.Tasks.Que.Setup` mix task or call
+  `Que.Persistence.Mnesia.setup!/0` to create the Schema, Database
+  and Tables.
+  """
+
+
   @config [
     db:     DB,
     table:  Jobs
@@ -11,12 +50,34 @@ defmodule Que.Persistence.Mnesia do
   @store  Module.concat(@db, @config[:table])
 
 
-  def initialize do
-    @db.create
-  end
 
 
-  @doc "Persist the Mnesia DB to Disk"
+  @doc """
+  Creates the Mnesia Database for `Que` on disk
+
+  This creates the Schema, Database and Tables for
+  Que Jobs on disk for the current erlang `node` so
+  Jobs are persisted across application restarts.
+  Calling this momentarily stops the `:mnesia`
+  application so you should make sure it's not being
+  used when you do.
+
+  ## On Production
+
+  For a running Elixir release (`Distillery` or `Exrm`),
+  start the application in console mode or connect a
+  shell to the running release and simply call the
+  method:
+
+  ```
+  $ bin/my_app remote_console
+
+  iex(my_app@127.0.0.1)1> Que.Persistence.Mnesia.setup!
+  :ok
+  ```
+
+  """
+  @spec setup! :: :ok
   def setup! do
     nodes = [node()]
 
@@ -36,6 +97,18 @@ defmodule Que.Persistence.Mnesia do
   end
 
 
+
+
+  @doc "Returns the Mnesia configuration for Que"
+  @spec __config__ :: Keyword.t
+  def __config__ do
+    [database: @db, table: @store]
+  end
+
+
+
+
+
   defdatabase DB do
     @moduledoc false
 
@@ -44,6 +117,7 @@ defmodule Que.Persistence.Mnesia do
 
       @store     __MODULE__
       @moduledoc false
+
 
 
       @doc "Finds all Jobs"
@@ -56,6 +130,7 @@ defmodule Que.Persistence.Mnesia do
       end
 
 
+
       @doc "Find Completed Jobs"
       def find_completed_jobs do
         Amnesia.transaction do
@@ -63,6 +138,7 @@ defmodule Que.Persistence.Mnesia do
           |> parse_selection
         end
       end
+
 
 
       @doc "Find Incomplete Jobs"
@@ -74,6 +150,7 @@ defmodule Que.Persistence.Mnesia do
       end
 
 
+
       @doc "Find Failed Jobs"
       def find_failed_jobs do
         Amnesia.transaction do
@@ -83,6 +160,7 @@ defmodule Que.Persistence.Mnesia do
       end
 
 
+
       @doc "Find all Jobs for a worker"
       def find_jobs_for_worker(name) do
         Amnesia.transaction do
@@ -90,6 +168,7 @@ defmodule Que.Persistence.Mnesia do
           |> parse_selection
         end
       end
+
 
 
       @doc "Finds a Job in the DB"
@@ -103,12 +182,14 @@ defmodule Que.Persistence.Mnesia do
       end
 
 
+
       @doc "Inserts a new Que.Job in to DB"
       def create_job(job) do
         job
         |> Map.put(:created_at, NaiveDateTime.utc_now)
         |> update_job
       end
+
 
 
       @doc "Updates existing Que.Job in DB"
@@ -123,6 +204,7 @@ defmodule Que.Persistence.Mnesia do
       end
 
 
+
       @doc "Deletes a Que.Job from the DB"
       def delete_job(job) do
         Amnesia.transaction do
@@ -131,6 +213,7 @@ defmodule Que.Persistence.Mnesia do
           |> delete
         end
       end
+
 
 
 
@@ -146,10 +229,12 @@ defmodule Que.Persistence.Mnesia do
       end
 
 
+
       # Convert Que.Job to Mnesia Job
       defp to_db_job(%Que.Job{} = job) do
         struct(@store, Map.from_struct(job))
       end
+
 
 
       # Convert Mnesia DB Job to Que.Job
@@ -157,6 +242,7 @@ defmodule Que.Persistence.Mnesia do
       defp to_que_job(%@store{} = job) do
         struct(Que.Job, Map.from_struct(job))
       end
+
 
 
       # Convert Selection to Que.Job struct list
@@ -170,20 +256,38 @@ defmodule Que.Persistence.Mnesia do
   end
 
 
+
+  # Make sures that the DB exists (either
+  # in memory or on disk)
+  @doc false
+  def initialize, do: @db.create
+
+
+  @doc false
   defdelegate all,                to: @store,   as: :find_all_jobs
+
+  @doc false
   defdelegate completed,          to: @store,   as: :find_completed_jobs
+
+  @doc false
   defdelegate incomplete,         to: @store,   as: :find_incomplete_jobs
+
+  @doc false
   defdelegate failed,             to: @store,   as: :find_failed_jobs
 
+  @doc false
   defdelegate find(job),          to: @store,   as: :find_job
+
+  @doc false
   defdelegate for_worker(worker), to: @store,   as: :find_jobs_for_worker
 
+  @doc false
   defdelegate insert(job),        to: @store,   as: :create_job
+
+  @doc false
   defdelegate update(job),        to: @store,   as: :update_job
+
+  @doc false
   defdelegate destroy(job),       to: @store,   as: :delete_job
 
-
-  def __config__ do
-    [database: @db, table: @store]
-  end
 end
