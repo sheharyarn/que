@@ -1,9 +1,7 @@
 defmodule Mix.Tasks.Que.Setup do
   use Mix.Task
 
-  @shortdoc """
-  Creates an Mnesia DB on disk for Que
-  """
+  @shortdoc "Creates an Mnesia DB on disk for Que"
 
   @moduledoc """
   Creates an Mnesia DB on disk for Que
@@ -34,7 +32,7 @@ defmodule Mix.Tasks.Que.Setup do
 
   For production environments and compiled releases where `Mix` is not
   available, you should use `Que.Persistence.Mnesia.setup!/0` instead.
-  You can [read its guide here](Que.Persistence.Mnesia.html#setup!/0-on-production).
+  You can [read about it here](Que.Persistence.Mnesia.html#setup!/0-on-production).
 
 
   ## Custom Node Name and Cookie
