@@ -41,6 +41,28 @@ defmodule Que.Worker do
   ```
 
 
+
+  ## Concurrency
+
+  By default, workers process one Job at a time. You can specify a custom
+  value by passing the `concurrency` option.
+
+  ```
+  defmodule MyApp.Workers.PageScraper do
+    use Que.Worker, concurrency: 4
+
+    def perform(url), do: Scraper.scrape(url)
+  end
+  ```
+
+  If you want all Jobs to be processed concurrently without any limit,
+  you can set the concurrency option to `:infinity`. The concurrency
+  option must either be a positive integer or `:infinity`, otherwise
+  it will raise an error during compilation.
+
+
+
+
   ## Handle Job Success & Failure
 
   The worker can also export optional `on_success/1` and `on_failure/2`
@@ -154,7 +176,7 @@ defmodule Que.Worker do
 
 
         # Raise error if the concurrency option in invalid
-        unless @concurrency == :infinity or is_integer(@concurrency) do
+        unless @concurrency == :infinity or (is_integer(@concurrency) and @concurrency > 0) do
           raise Que.Error.InvalidWorker,
             "#{ExUtils.Module.name(__MODULE__)} has an invalid concurrency value"
         end
