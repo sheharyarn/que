@@ -128,22 +128,35 @@ defmodule Que.Worker do
       def __que_worker__, do: true
 
 
+
       ## Default implementations of on_success and on_failure callbacks
 
       def on_success(_arg) do
       end
 
+
       def on_failure(_arg, _err) do
       end
+
 
       defoverridable [on_success: 1, on_failure: 2]
 
 
-      # Raises error after compilation if the Worker doesn't export
-      # a perform/1 method
+
+      # Make sure the Worker is valid
       def __after_compile__(_env, _bytecode) do
+
+        # Raises error if the Worker doesn't export a perform/1 method
         unless Module.defines?(__MODULE__, {:perform, 1}) do
-          raise Que.Error.InvalidWorker, "#{ExUtils.Module.name(__MODULE__)} must export a perform/1 method"
+          raise Que.Error.InvalidWorker,
+            "#{ExUtils.Module.name(__MODULE__)} must export a perform/1 method"
+        end
+
+
+        # Raise error if the concurrency option in invalid
+        unless @concurrency == :infinity or is_integer(@concurrency) do
+          raise Que.Error.InvalidWorker,
+            "#{ExUtils.Module.name(__MODULE__)} has an invalid concurrency value"
         end
       end
 
