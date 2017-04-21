@@ -16,6 +16,16 @@ defmodule Que.Test.Worker do
   end
 
 
+  test "compilation fails if concurrency value isn't an integer or :infinity" do
+    assert_raise(Que.Error.InvalidWorker, ~r/invalid concurrency/, fn ->
+      defmodule InvalidConcurrencyWorker do
+        use Que.Worker, concurrency: :something
+        def perform(_), do: nil
+      end
+    end)
+  end
+
+
   test "#valid? returns true for modules that `use` Que.Worker properly" do
     assert Que.Worker.valid?(TestWorker)
     assert Que.Worker.valid?(SuccessWorker)
