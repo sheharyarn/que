@@ -64,7 +64,7 @@ defmodule Que.Persistence.Mnesia do
 
   ## On Production
 
-  For a running Elixir release (`Distillery` or `Exrm`),
+  For a compiled release (`Distillery` or `Exrm`),
   start the application in console mode or connect a
   shell to the running release and simply call the
   method:
