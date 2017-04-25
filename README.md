@@ -1,12 +1,14 @@
-[![logo][logo]][docs]
-=====================
+[<img src='https://i.imgur.com/Eec71eh.png' width='200px' />][docs]
+===================================================================
 
 [![Build Status][shield-travis]][travis-ci]
 [![Coverage Status][shield-inch]][inch-ci]
 [![Version][shield-version]][hexpm]
 [![License][shield-license]][hexpm]
 
-> Simple Background Job Processing in Elixir
+> Simple Background Job Processing in Elixir :zap:
+
+<br>
 
 
 
@@ -29,6 +31,8 @@ def application do
 end
 ```
 
+<br>
+
 
 
 
@@ -49,6 +53,8 @@ end
     - [ ] Set up Job Retries (w/ Exponential Backoff)
     - [ ] Allow customizing Job Retries in `handle_failure` block
 
+<br>
+
 
 
 
@@ -59,12 +65,17 @@ end
  - Implement something from Roadmap
  - Spread the word
 
+<br>
+
 
 
 
 ## License
 
 This package is available as open source under the terms of the [MIT License][license].
+
+<br>
+
 
 
 
