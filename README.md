@@ -38,20 +38,20 @@ end
 
 ## Roadmap
 
- - [ ] Write Documentation
- - [ ] Write Tests
- - [ ] Persist Job State to Disk
- - [ ] Allow setting Job priority
- - [ ] Add Concurrency Support
+ - [x] Write Documentation
+ - [x] Write Tests
+ - [x] Persist Job State to Disk
+    - [x] Provide an API to interact with Jobs
+ - [x] Add Concurrency Support
     - [x] Make jobs work in Parallel
-    - [ ] Allow customizing the number of concurrent jobs
- - [ ] Event Handlers
-    - [x] Success/Failure
-    - [ ] Start/Finish
+    - [x] Allow customizing the number of concurrent jobs
+ - [x] Success/Failure Callbacks
+ - [ ] Delayed Jobs
+ - [ ] Allow job cancellation
  - [ ] Better Job Failures
     - [ ] Option to set timeout on workers
-    - [ ] Set up Job Retries (w/ Exponential Backoff)
-    - [ ] Allow customizing Job Retries in `handle_failure` block
+    - [ ] Add strategies to automatically retry failed jobs
+ - [ ] Web UI
 
 <br>
 
