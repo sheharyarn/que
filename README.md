@@ -49,7 +49,7 @@ Que is very similar to other job processing libraries such as Ku, Toniq
 and DelayedJob. Start by defining a [`Worker`][docs-worker] with a
 `perform/1` callback to process your jobs:
 
-```
+```elixir
 defmodule App.Workers.ImageConverter do
   use Que.Worker
 
@@ -63,7 +63,7 @@ end
 
 You can now add jobs to be processed by the worker:
 
-```
+```elixir
 Que.add(App.Workers.ImageConverter, some_image)
 #=> :ok
 ```
