@@ -47,8 +47,7 @@ only. To persist jobs across application restarts, specify the DB
 path in your `config.exs`:
 
 ```elixir
-config :mnesia, dir: 'mnesia/\#{Mix.env}/\#{node()}'
-# Notice the single quotes
+config :mnesia, dir: 'mnesia/#{Mix.env}/#{node()}'        # Notice the single quotes
 ```
 
 And run the following mix task:
@@ -58,11 +57,12 @@ $ mix que.setup
 ```
 
 This will create the Mnesia schema and job database for you. For a
-detailed guide, see the [Mix Task Documentation][docs-mix]. To create
-the DB in production for compiled releases where `Mix` is not available
+detailed guide, see the [Mix Task Documentation][docs-mix]. For
+compiled releases where `Mix` is not available
 [see this][docs-setup-prod].
 
 <br>
+
 
 
 
@@ -91,7 +91,72 @@ Que.add(App.Workers.ImageConverter, some_image)
 #=> :ok
 ```
 
-The argument here can be anything
+The argument here can be any term from a Tuple to a Keyword List
+or a Struct. You can also pattern match and use guard clauses like
+normal methods:
+
+```elixir
+defmodule App.Workers.NotificationSender do
+  use Que.Worker
+
+  def perform(type: :like, to: user, count: count) do
+    User.notify(user, "You have #{count} new likes on your posts")
+  end
+
+  def perform(type: :message, to: user, from: sender) do
+    User.notify(user, "You received a new message from #{sender.name}")
+  end
+
+  def perform(to: user) do
+    User.notify(user, "New activity on your profile")
+  end
+end
+```
+
+
+### Concurrency
+
+By default, all workers process one Job at a time, but you can
+customize that by passing the `concurrency` option:
+
+```elixir
+defmodule App.Workers.SignupMailer do
+  use Que.Worker, concurrency: 4
+
+  def perform(email) do
+    Mailer.send_email(to: email, message: "Thank you for signing up!")
+  end
+end
+```
+
+
+### Job Success / Failure Callbacks
+
+The worker can also export optional `on_success/1` and `on_failure/2`
+callbacks that handle appropriate cases.
+
+```elixir
+defmodule App.Workers.ReportBuilder do
+  use Que.Worker
+
+  def perform({user, report}) do
+    report.data
+    |> PDFGenerator.generate!
+    |> File.write!("reports/#{user.id}/report-#{report.id}.pdf")
+  end
+
+  def on_success({user, _}) do
+    Mailer.send_email(to: user.email, subject: "Your Report is ready!")
+  end
+
+  def on_failure({user, report}, error) do
+    Mailer.send_email(to: user.email, subject: "There was a problem generating your report")
+    Logger.error("Could not generate report #{report.id}. Reason: #{inspect(error)}")
+  end
+end
+```
+
+Head over to Hexdocs for detailed [`Worker` documentation][docs-worker].
 
 <br>
 
