@@ -8,11 +8,11 @@
 
 > Simple Background Job Processing in Elixir :zap:
 
-Que is a background job processing library backed by [`Mnesia`][mnesia], a
-distributed real-time database that comes with Erlang / Elixir. That means
-it doesn't depend on any external services like `Redis` for persisting job
-state. This makes it really easy to use since you don't need to install
-anything other Que itself.
+Que is a job processing library backed by [`Mnesia`][mnesia], a distributed
+real-time database that comes with Erlang / Elixir. That means it doesn't
+depend on any external services like `Redis` for persisting job state. This
+makes it really easy to use since you don't need to install anything other
+Que itself.
 
 See the [Documentation][docs].
 
@@ -23,7 +23,7 @@ See the [Documentation][docs].
 
 ## Installation
 
-Add `que` to your list of dependencies in `mix.exs`:
+Add `que` to your project dependencies in `mix.exs`:
 
 ```elixir
 def deps do
@@ -31,7 +31,7 @@ def deps do
 end
 ```
 
-and add it to your list of `applications`:
+and then add it to your list of `applications`:
 
 ```elixir
 def application do
@@ -39,15 +39,38 @@ def application do
 end
 ```
 
+
+### Mnesia Setup
+
+Que runs out of the box, but by default all jobs are stored in-memory
+only. To persist jobs across application restarts, specify the DB
+path in your `config.exs`:
+
+```elixir
+config :mnesia, dir: 'mnesia/\#{Mix.env}/\#{node()}'
+# Notice the single quotes
+```
+
+And run the following mix task:
+
+```bash
+$ mix que.setup
+```
+
+This will create the Mnesia schema and job database for you. For a
+detailed guide, see the [Mix Task Documentation][docs-mix]. To create
+the DB in production for compiled releases where `Mix` is not available
+[see this][docs-setup-prod].
+
 <br>
 
 
 
 ## Usage
 
-Que is very similar to other job processing libraries such as Ku, Toniq
-and DelayedJob. Start by defining a [`Worker`][docs-worker] with a
-`perform/1` callback to process your jobs:
+Que is very similar to other job processing libraries such as Ku and
+Toniq. Start by defining a [`Worker`][docs-worker] with a `perform/1`
+callback to process your jobs:
 
 ```elixir
 defmodule App.Workers.ImageConverter do
@@ -68,6 +91,8 @@ Que.add(App.Workers.ImageConverter, some_image)
 #=> :ok
 ```
 
+The argument here can be anything
+
 <br>
 
 
@@ -85,6 +110,7 @@ Que.add(App.Workers.ImageConverter, some_image)
  - [x] Success/Failure Callbacks
  - [ ] Delayed Jobs
  - [ ] Allow job cancellation
+ - [x] Mix Task for creating Mnesia Database
  - [ ] Better Job Failures
     - [ ] Option to set timeout on workers
     - [ ] Add strategies to automatically retry failed jobs
@@ -128,10 +154,12 @@ This package is available as open source under the terms of the [MIT License][li
 
   [license]:          https://opensource.org/licenses/MIT
   [mnesia]:           http://erlang.org/doc/man/mnesia.html
-
   [hexpm]:            https://hex.pm/packages/que
+
   [docs]:             https://hexdocs.pm/que
   [docs-worker]:      https://hexdocs.pm/que/Que.Worker.html
+  [docs-mix]:         https://hexdocs.pm/que/Mix.Tasks.Que.Setup.html
+  [docs-setup-prod]:  https://hexdocs.pm/que/Que.Persistence.Mnesia.html#setup!/0
 
   [github-fork]:      https://github.com/sheharyarn/que/fork
 
