@@ -86,6 +86,15 @@ defmodule Que.Worker do
     end
   end
   ```
+
+
+
+  ## Failed Job Retries
+
+  Failed Jobs are NOT automatically retried. If you want a job to be
+  retried when it fails, you can simply enqueue it again.
+
+  To get a list of all failed jobs, you can call `Que.Persistence.failed/0`.
   """
 
 
