@@ -79,7 +79,6 @@ defmodule App.Workers.ImageConverter do
   def perform(image) do
     ImageTool.save_resized_copy!(image, :thumbnail)
     ImageTool.save_resized_copy!(image, :medium)
-    ImageTool.save_resized_copy!(image, :large)
   end
 end
 ```
@@ -91,9 +90,12 @@ Que.add(App.Workers.ImageConverter, some_image)
 #=> :ok
 ```
 
+
+### Pattern Matching
+
 The argument here can be any term from a Tuple to a Keyword List
 or a Struct. You can also pattern match and use guard clauses like
-normal methods:
+any other method:
 
 ```elixir
 defmodule App.Workers.NotificationSender do
