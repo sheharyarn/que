@@ -27,7 +27,7 @@ Add `que` to your project dependencies in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:que, "~> 0.3.0"}]
+  [{:que, "~> 0.3.1"}]
 end
 ```
 
@@ -191,7 +191,7 @@ Head over to Hexdocs for detailed [`Worker` documentation][docs-worker].
  - [Fork][github-fork], Enhance, Send PR
  - Lock issues with any bugs or feature requests
  - Implement something from Roadmap
- - Spread the word
+ - Spread the word :heart:
 
 <br>
 

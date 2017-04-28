@@ -3,7 +3,7 @@ defmodule Que.Mixfile do
 
   @app     :que
   @name    "Que"
-  @version "0.3.0"
+  @version "0.3.1"
   @github  "https://github.com/sheharyarn/#{@app}"
 
 
@@ -49,7 +49,7 @@ defmodule Que.Mixfile do
 
 
   defp description do
-    "Background Job Processor for Elixir"
+    "Simple Background Job Processing with Mnesia"
   end
 
 
