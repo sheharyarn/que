@@ -148,7 +148,7 @@ defmodule Que.Persistence.Mnesia do
 
 
       @doc "Find all Jobs for a worker"
-      def all_jobs_for_worker(name) do
+      def all_jobs(name) do
         Amnesia.transaction do
           where(worker == name)
           |> parse_selection
@@ -161,6 +161,16 @@ defmodule Que.Persistence.Mnesia do
       def completed_jobs do
         Amnesia.transaction do
           where(status == :completed)
+          |> parse_selection
+        end
+      end
+
+
+
+      @doc "Find Completed Jobs for worker"
+      def completed_jobs(name) do
+        Amnesia.transaction do
+          where(worker == name and status == :completed)
           |> parse_selection
         end
       end
@@ -283,10 +293,13 @@ defmodule Que.Persistence.Mnesia do
   defdelegate all,                to: @store,   as: :all_jobs
 
   @doc false
-  defdelegate all(worker),        to: @store,   as: :all_jobs_for_worker
+  defdelegate all(worker),        to: @store,   as: :all_jobs
 
   @doc false
   defdelegate completed,          to: @store,   as: :completed_jobs
+
+  @doc false
+  defdelegate completed(worker),  to: @store,   as: :completed_jobs
 
   @doc false
   defdelegate incomplete,         to: @store,   as: :incomplete_jobs
