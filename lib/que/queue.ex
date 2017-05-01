@@ -44,7 +44,7 @@ defmodule Que.Queue do
     Que.Worker.validate!(worker)
 
     if (length(running) < worker.concurrency) do
-      case pop(q) do
+      case fetch(q) do
         {q, nil} ->
           q
 
@@ -66,29 +66,29 @@ defmodule Que.Queue do
 
 
   @doc """
-  Pushes one or more Jobs to the `queued` list
+  Adds one or more Jobs to the `queued` list
   """
-  @spec push(queue :: Que.Queue.t, jobs :: Que.Job.t | list(Que.Job.t)) :: Que.Queue.t
-  def push(%Que.Queue{queued: queued} = q, jobs) when is_list(jobs) do
+  @spec put(queue :: Que.Queue.t, jobs :: Que.Job.t | list(Que.Job.t)) :: Que.Queue.t
+  def put(%Que.Queue{queued: queued} = q, jobs) when is_list(jobs) do
     %{ q | queued: queued ++ jobs }
   end
 
-  def push(queue, job) do
-    push(queue, [job])
+  def put(queue, job) do
+    put(queue, [job])
   end
 
 
 
 
   @doc """
-  Pops the next Job in queue and returns a queue and Job tuple
+  Fetches the next Job in queue and returns a queue and Job tuple
   """
-  @spec pop(queue :: Que.Queue.t) :: { Que.Queue.t, Que.Job.t | nil }
-  def pop(%Que.Queue{queued: [ job | rest ]} = q) do
+  @spec fetch(queue :: Que.Queue.t) :: { Que.Queue.t, Que.Job.t | nil }
+  def fetch(%Que.Queue{queued: [ job | rest ]} = q) do
     { %{ q | queued: rest }, job }
   end
 
-  def pop(%Que.Queue{queued: []} = q) do
+  def fetch(%Que.Queue{queued: []} = q) do
     { q, nil }
   end
 

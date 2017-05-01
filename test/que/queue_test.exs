@@ -27,42 +27,42 @@ defmodule Que.Test.Queue do
   end
 
 
-  test "#push adds a single job to the queued list" do
+  test "#put adds a single job to the queued list" do
     q =
       TestWorker
       |> Queue.new([1, 2, 3])
-      |> Queue.push(4)
+      |> Queue.put(4)
 
     assert q.queued == [1, 2, 3, 4]
   end
 
 
-  test "#push adds multiple jobs to the queued list" do
+  test "#put adds multiple jobs to the queued list" do
     q =
       TestWorker
       |> Queue.new([1, 2, 3])
-      |> Queue.push([4, 5, 6, 7])
+      |> Queue.put([4, 5, 6, 7])
 
     assert q.queued == [1, 2, 3, 4, 5, 6, 7]
   end
 
 
-  test "#pop gets the next job in queue and removes it from the list" do
+  test "#fetch gets the next job in queue and removes it from the list" do
     {q, job} =
       TestWorker
       |> Queue.new([1, 2, 3])
-      |> Queue.pop
+      |> Queue.fetch
 
     assert job      == 1
     assert q.queued == [2, 3]
   end
 
 
-  test "#pop returns nil for empty queues" do
+  test "#fetch returns nil for empty queues" do
     {q, job} =
       TestWorker
       |> Queue.new
-      |> Queue.pop
+      |> Queue.fetch
 
     assert job      == nil
     assert q.queued == []

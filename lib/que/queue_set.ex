@@ -54,7 +54,7 @@ defmodule Que.QueueSet do
     q =
       qset
       |> Que.QueueSet.get(job.worker)
-      |> Que.Queue.push(job)
+      |> Que.Queue.put(job)
 
     %{ qset | queues: Map.put(qset.queues, job.worker, q) }
   end
