@@ -73,6 +73,15 @@ defmodule Que.Persistence do
 
 
   @doc """
+  Returns all `Que.Job`s for the given worker.
+  """
+  @spec all(worker :: Que.Worker.t) :: list(Que.Job.t)
+  defdelegate all(worker), to: @adapter
+
+
+
+
+  @doc """
   Returns completed `Que.Job`s from the database.
   """
   @spec completed :: list(Que.Job.t)
@@ -98,15 +107,6 @@ defmodule Que.Persistence do
   """
   @spec failed :: list(Que.Job.t)
   defdelegate failed, to: @adapter
-
-
-
-
-  @doc """
-  Returns all `Que.Job`s for the given worker.
-  """
-  @spec for_worker(worker :: Que.Worker.t) :: list(Que.Job.t)
-  defdelegate for_worker(worker), to: @adapter
 
 
 

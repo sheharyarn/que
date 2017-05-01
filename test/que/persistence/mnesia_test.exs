@@ -37,15 +37,26 @@ defmodule Que.Test.Persistence.Mnesia do
   end
 
 
-  test "#all returns empty list when there are no jobs in DB" do
+  test "#all/0 returns empty list when there are no jobs in DB" do
     assert Mnesia.all == []
   end
 
 
-  test "#all returns all jobs present in DB" do
+  test "#all/0 returns all jobs present in DB" do
     jobs = Helpers.Mnesia.create_sample_jobs
 
     assert Mnesia.all == jobs
+  end
+
+
+  test "#all/1 finds all jobs for a worker" do
+    assert Mnesia.all == []
+
+    [t1, s1, f1, t2, s2, f2] = Helpers.Mnesia.create_sample_jobs
+
+    assert [t1, t2] == Mnesia.all(TestWorker)
+    assert [s1, s2] == Mnesia.all(SuccessWorker)
+    assert [f1, f2] == Mnesia.all(FailureWorker)
   end
 
 
@@ -74,17 +85,6 @@ defmodule Que.Test.Persistence.Mnesia do
     [_, _, _, s | _] = Helpers.Mnesia.create_sample_jobs
 
     assert s == Mnesia.find(4)
-  end
-
-
-  test "#for_worker finds all jobs for a worker" do
-    assert Mnesia.all == []
-
-    [t1, s1, f1, t2, s2, f2] = Helpers.Mnesia.create_sample_jobs
-
-    assert [t1, t2] == Mnesia.for_worker(TestWorker)
-    assert [s1, s2] == Mnesia.for_worker(SuccessWorker)
-    assert [f1, f2] == Mnesia.for_worker(FailureWorker)
   end
 
 

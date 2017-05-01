@@ -121,7 +121,7 @@ defmodule Que.Persistence.Mnesia do
 
 
       @doc "Finds all Jobs"
-      def find_all_jobs do
+      def all_jobs do
         Amnesia.transaction do
           keys()
           |> match
@@ -131,8 +131,18 @@ defmodule Que.Persistence.Mnesia do
 
 
 
+      @doc "Find all Jobs for a worker"
+      def all_jobs_for_worker(name) do
+        Amnesia.transaction do
+          where(worker == name)
+          |> parse_selection
+        end
+      end
+
+
+
       @doc "Find Completed Jobs"
-      def find_completed_jobs do
+      def completed_jobs do
         Amnesia.transaction do
           where(status == :completed)
           |> parse_selection
@@ -142,7 +152,7 @@ defmodule Que.Persistence.Mnesia do
 
 
       @doc "Find Incomplete Jobs"
-      def find_incomplete_jobs do
+      def incomplete_jobs do
         Amnesia.transaction do
           where(status == :queued or status == :started)
           |> parse_selection
@@ -152,19 +162,9 @@ defmodule Que.Persistence.Mnesia do
 
 
       @doc "Find Failed Jobs"
-      def find_failed_jobs do
+      def failed_jobs do
         Amnesia.transaction do
           where(status == :failed)
-          |> parse_selection
-        end
-      end
-
-
-
-      @doc "Find all Jobs for a worker"
-      def find_jobs_for_worker(name) do
-        Amnesia.transaction do
-          where(worker == name)
           |> parse_selection
         end
       end
@@ -264,22 +264,22 @@ defmodule Que.Persistence.Mnesia do
 
 
   @doc false
-  defdelegate all,                to: @store,   as: :find_all_jobs
+  defdelegate all,                to: @store,   as: :all_jobs
 
   @doc false
-  defdelegate completed,          to: @store,   as: :find_completed_jobs
+  defdelegate all(worker),        to: @store,   as: :all_jobs_for_worker
 
   @doc false
-  defdelegate incomplete,         to: @store,   as: :find_incomplete_jobs
+  defdelegate completed,          to: @store,   as: :completed_jobs
 
   @doc false
-  defdelegate failed,             to: @store,   as: :find_failed_jobs
+  defdelegate incomplete,         to: @store,   as: :incomplete_jobs
+
+  @doc false
+  defdelegate failed,             to: @store,   as: :failed_jobs
 
   @doc false
   defdelegate find(job),          to: @store,   as: :find_job
-
-  @doc false
-  defdelegate for_worker(worker), to: @store,   as: :find_jobs_for_worker
 
   @doc false
   defdelegate insert(job),        to: @store,   as: :create_job
