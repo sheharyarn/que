@@ -114,6 +114,19 @@ defmodule Que.Test.Meta do
       :ok
     end
 
+    # Deletes the Mnesia DB from disk and creates a fresh one in memory
+    def reset! do
+      Helpers.capture_log(fn ->
+        db_path = Path.expand(Application.get_env(:mnesia, :dir))
+
+        Amnesia.stop
+        File.rm_rf!(db_path)
+        Amnesia.start
+
+        reset()
+      end)
+    end
+
     # Creates sample Mnesia jobs
     def create_sample_jobs do
       [
