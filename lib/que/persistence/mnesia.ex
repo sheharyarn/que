@@ -114,7 +114,11 @@ defmodule Que.Persistence.Mnesia do
   @doc "Returns the Mnesia configuration for Que"
   @spec __config__ :: Keyword.t
   def __config__ do
-    [database: @db, table: @store]
+    [
+      database: @db,
+      table:    @store,
+      path:     Path.expand(Application.get_env(:mnesia, :dir))
+    ]
   end
 
 

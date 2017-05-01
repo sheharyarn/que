@@ -117,10 +117,8 @@ defmodule Que.Test.Meta do
     # Deletes the Mnesia DB from disk and creates a fresh one in memory
     def reset! do
       Helpers.capture_log(fn ->
-        db_path = Path.expand(Application.get_env(:mnesia, :dir))
-
         Amnesia.stop
-        File.rm_rf!(db_path)
+        File.rm_rf!(Que.Persistence.Mnesia.__config__[:path])
         Amnesia.start
 
         reset()

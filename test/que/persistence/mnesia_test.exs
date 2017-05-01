@@ -19,10 +19,9 @@ defmodule Que.Test.Persistence.Mnesia do
     Helpers.Mnesia.reset!
 
     config  = Mnesia.__config__
-    db_path = Path.expand(Application.get_env(:mnesia, :dir))
     capture = Helpers.capture_io(&:mnesia.info/0)
 
-    assert capture =~ ~r/Directory "#{db_path}" is NOT used/
+    assert capture =~ ~r/Directory "#{config[:path]}" is NOT used/
     assert capture =~ ~r/ram_copies\s+=.+#{config[:database]}.+#{config[:table]}/s
 
     capture = Helpers.capture_all(fn ->
@@ -30,7 +29,7 @@ defmodule Que.Test.Persistence.Mnesia do
       :mnesia.info
     end)
 
-    assert capture =~ ~r/Directory "#{db_path}" is used/
+    assert capture =~ ~r/Directory "#{config[:path]}" is used/
     assert capture =~ ~r/disc_copies\s+=.+#{config[:database]}.+#{config[:table]}/s
 
     Helpers.Mnesia.reset!
