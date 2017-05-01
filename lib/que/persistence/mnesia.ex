@@ -56,11 +56,14 @@ defmodule Que.Persistence.Mnesia do
   Creates the Mnesia Database for `Que` on disk
 
   This creates the Schema, Database and Tables for
-  Que Jobs on disk for the current erlang `node` so
+  Que Jobs on disk for the specified erlang nodes so
   Jobs are persisted across application restarts.
   Calling this momentarily stops the `:mnesia`
   application so you should make sure it's not being
   used when you do.
+
+  If no argument is provided, the database is created
+  for the current node.
 
   ## On Production
 
@@ -76,11 +79,20 @@ defmodule Que.Persistence.Mnesia do
   :ok
   ```
 
-  """
-  @spec setup! :: :ok
-  def setup! do
-    nodes = [node()]
+  You can alternatively provide a list of nodes for
+  which you would like to create the schema:
 
+  ```
+  iex(my_app@host_x)1> nodes = [node() | Node.list]
+  [:my_app@host_x, :my_app@host_y, :my_app@host_z]
+
+  iex(my_app@node_x)2> Que.Persistence.Mnesia.setup!(nodes)
+  :ok
+  ```
+
+  """
+  @spec setup!(nodes :: list(node)) :: :ok
+  def setup!(nodes \\ [node()]) do
     # Create the DB directory (if custom path given)
     if path = Application.get_env(:mnesia, :dir) do
       :ok = File.mkdir_p!(path)
