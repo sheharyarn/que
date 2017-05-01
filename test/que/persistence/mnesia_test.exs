@@ -74,17 +74,34 @@ defmodule Que.Test.Persistence.Mnesia do
   end
 
 
-  test "#incomplete returns queued and started jobs" do
+  test "#incomplete/0 returns queued and started jobs" do
     [_, _, _, s, q1, q2] = Helpers.Mnesia.create_sample_jobs
 
     assert Mnesia.incomplete == [s, q1, q2]
   end
 
 
-  test "#failed returns only failed jobs" do
+  test "#incomplete/1 returns queued and started jobs for given worker" do
+    [_, _, _, ts, sq, fq] = Helpers.Mnesia.create_sample_jobs
+
+    assert Mnesia.incomplete(TestWorker)    == [ts]
+    assert Mnesia.incomplete(SuccessWorker) == [sq]
+    assert Mnesia.incomplete(FailureWorker) == [fq]
+  end
+
+
+  test "#failed/0 returns all failed jobs" do
     [_, _, f | _] = Helpers.Mnesia.create_sample_jobs
 
     assert Mnesia.failed == [f]
+  end
+
+
+  test "#failed/1 returns only failed jobs for given worker" do
+    [_, _, f | _] = Helpers.Mnesia.create_sample_jobs
+
+    assert Mnesia.failed(TestWorker)    == [ ]
+    assert Mnesia.failed(FailureWorker) == [f]
   end
 
 

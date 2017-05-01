@@ -187,10 +187,30 @@ defmodule Que.Persistence.Mnesia do
 
 
 
+      @doc "Find Incomplete Jobs for worker"
+      def incomplete_jobs(name) do
+        Amnesia.transaction do
+          where(worker == name and (status == :queued or status == :started))
+          |> parse_selection
+        end
+      end
+
+
+
       @doc "Find Failed Jobs"
       def failed_jobs do
         Amnesia.transaction do
           where(status == :failed)
+          |> parse_selection
+        end
+      end
+
+
+
+      @doc "Find Failed Jobs for worker"
+      def failed_jobs(name) do
+        Amnesia.transaction do
+          where(worker == name and status == :failed)
           |> parse_selection
         end
       end
@@ -305,7 +325,13 @@ defmodule Que.Persistence.Mnesia do
   defdelegate incomplete,         to: @store,   as: :incomplete_jobs
 
   @doc false
+  defdelegate incomplete(worker), to: @store,   as: :incomplete_jobs
+
+  @doc false
   defdelegate failed,             to: @store,   as: :failed_jobs
+
+  @doc false
+  defdelegate failed(worker),     to: @store,   as: :failed_jobs
 
   @doc false
   defdelegate find(job),          to: @store,   as: :find_job

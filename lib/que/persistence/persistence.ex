@@ -91,6 +91,15 @@ defmodule Que.Persistence do
 
 
   @doc """
+  Returns completed `Que.Job`s for the given worker.
+  """
+  @spec completed(worker :: Que.Worker.t) :: list(Que.Job.t)
+  defdelegate completed(worker), to: @adapter
+
+
+
+
+  @doc """
   Returns incomplete `Que.Job`s from the database.
 
   This includes all Jobs whose status is either
@@ -103,10 +112,28 @@ defmodule Que.Persistence do
 
 
   @doc """
+  Returns incomplete `Que.Job`s for the given worker.
+  """
+  @spec incomplete(worker :: Que.Worker.t) :: list(Que.Job.t)
+  defdelegate incomplete(worker), to: @adapter
+
+
+
+
+  @doc """
   Returns failed `Que.Job`s from the database.
   """
   @spec failed :: list(Que.Job.t)
   defdelegate failed, to: @adapter
+
+
+
+
+  @doc """
+  Returns failed `Que.Job`s for the given worker.
+  """
+  @spec failed(worker :: Que.Worker.t) :: list(Que.Job.t)
+  defdelegate failed(worker), to: @adapter
 
 
 
