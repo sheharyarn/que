@@ -1,6 +1,8 @@
 defmodule Que.ServerSupervisor do
   use Supervisor
 
+  @module __MODULE__
+
   @moduledoc """
   This Supervisor is responsible for spawning a `Que.Server`
   for each worker. You shouldn't start this manually unless
@@ -15,7 +17,7 @@ defmodule Que.ServerSupervisor do
   """
   @spec start_link() :: Supervisor.on_start
   def start_link do
-    Supervisor.start_link(__MODULE__, :ok, name: __MODULE__)
+    Supervisor.start_link(@module, :ok, name: @module)
   end
 
 
