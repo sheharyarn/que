@@ -23,6 +23,39 @@ defmodule Que.ServerSupervisor do
 
 
 
+  @doc """
+  Starts a `Que.Server` for the given worker
+  """
+  @spec start_server(worker :: Que.Worker.t) :: Supervisor.on_start_child | no_return
+  def start_server(worker) do
+    Que.Worker.validate!(worker)
+
+    case Supervisor.start_child(@module, [worker]) do
+      {:ok, pid} ->
+        Que.Helpers.log("Spawned new Server for worker #{ExUtils.Module.name(worker)}")
+        {:ok, pid}
+
+      error -> error
+    end
+  end
+
+
+
+
+  # If the server for the worker is running, add job to it.
+  # If not, spawn a new server first and then add it.
+  @doc false
+  def add(worker, args) do
+    unless Que.Server.exists?(worker) do
+      start_server(worker)
+    end
+
+    Que.Server.add(worker, args)
+  end
+
+
+
+
   @doc false
   def init(:ok) do
     children = [

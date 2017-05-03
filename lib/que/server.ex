@@ -127,6 +127,16 @@ defmodule Que.Server do
 
 
 
+  @doc false
+  def exists?(worker) do
+    worker
+    |> for_worker
+    |> GenServer.whereis
+  end
+
+
+
+
   # Get Server Name from Worker
 
   defp for_worker(worker) do

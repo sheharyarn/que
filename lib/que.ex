@@ -110,7 +110,7 @@ defmodule Que do
   ```
   """
   @spec add(worker :: module, arguments :: term) :: :ok
-  defdelegate add(worker, arguments), to: Que.Server
+  defdelegate add(worker, arguments), to: Que.ServerSupervisor
 
 end
 
