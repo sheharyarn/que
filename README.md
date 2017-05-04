@@ -27,7 +27,7 @@ Add `que` to your project dependencies in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:que, "~> 0.3.1"}]
+  [{:que, "~> 0.3.2"}]
 end
 ```
 

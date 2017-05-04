@@ -3,7 +3,7 @@ defmodule Que.Mixfile do
 
   @app     :que
   @name    "Que"
-  @version "0.3.1"
+  @version "0.3.2"
   @github  "https://github.com/sheharyarn/#{@app}"
 
 
