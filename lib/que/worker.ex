@@ -127,7 +127,11 @@ defmodule Que.Worker do
   """
   @spec valid?(module :: module) :: boolean
   def valid?(module) do
-    ExUtils.Module.has_method?(module, {:__que_worker__, 0})
+    try do
+      module.__que_worker__
+    rescue
+      UndefinedFunctionError -> false
+    end
   end
 
 
