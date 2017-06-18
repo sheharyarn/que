@@ -46,17 +46,15 @@ defmodule Que.Server do
 
   @doc false
   def init({:ok, worker}) do
-    Que.Persistence.initialize
-
     existing_jobs =
       Que.Persistence.incomplete(worker)
 
-    existing_jobs =
+    queue =
       worker
       |> Que.Queue.new(existing_jobs)
       |> Que.Queue.process
 
-    {:ok, existing_jobs}
+    {:ok, queue}
   end
 
 
