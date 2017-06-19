@@ -27,6 +27,19 @@ defmodule Que.Server do
 
 
 
+  @doc """
+  Stops the Job Server
+  """
+  @spec stop(worker :: Que.Worker.t) :: :ok
+  def stop(worker) do
+    worker
+    |> for_worker
+    |> GenServer.stop
+  end
+
+
+
+
   ## Internal Callbacks
   ## ------------------
 
