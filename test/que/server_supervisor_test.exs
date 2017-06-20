@@ -24,5 +24,4 @@ defmodule Que.Test.ServerSupervisor do
 
     assert capture =~ ~r/perform: :yo/
   end
-
 end
