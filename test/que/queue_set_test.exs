@@ -32,7 +32,7 @@ defmodule Que.Test.QueueSet do
 
     refute q        == nil
     assert q.worker == TestWorker
-    assert q.queued == []
+    assert :queue.to_list(q.queued) == []
   end
 
 
@@ -40,7 +40,7 @@ defmodule Que.Test.QueueSet do
     job  = Job.new(TestWorker)
     qset = QueueSet.add(sample_queue_set(), job)
 
-    assert qset.queues[TestWorker].queued == [job]
+    assert :queue.to_list(qset.queues[TestWorker].queued) == [job]
   end
 
 
@@ -53,6 +53,7 @@ defmodule Que.Test.QueueSet do
       |> QueueSet.update(%{ job | status: :failed })
       |> QueueSet.get(TestWorker)
       |> Map.get(:queued)
+      |> :queue.to_list()
 
     assert job.id     == :x
     assert job.status == :failed
