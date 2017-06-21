@@ -26,7 +26,7 @@ defmodule Que.Test.ServerSupervisor do
   end
 
 
-  test "loads and processes existing jobs when app starts" do
+  test "loads and processes existing jobs when supervisor starts" do
     Helpers.App.stop
 
     1..4
@@ -43,4 +43,21 @@ defmodule Que.Test.ServerSupervisor do
     assert capture =~ ~r/perform: :job_3/
     assert capture =~ ~r/perform: :job_4/
   end
+
+
+  test "doesn't process pending jobs for invalid workers when supervisor starts" do
+    Helpers.App.stop
+
+    1..4
+    |> Enum.map(&Que.Job.new(InvalidWorker, :"job_#{&1}"))
+    |> Enum.map(&Que.Persistence.insert/1)
+
+    capture = Helpers.capture_log(fn ->
+      Helpers.App.start
+      Helpers.wait
+    end)
+
+    assert capture =~ ~r/invalid workers:.+InvalidWorker/
+  end
+
 end

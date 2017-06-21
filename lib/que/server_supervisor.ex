@@ -74,11 +74,22 @@ defmodule Que.ServerSupervisor do
 
   # Spawn all (valid) Workers with queued jobs
   defp resume_queued_jobs do
-    Que.Persistence.incomplete
-    |> Enum.map(&(&1.worker))
-    |> Enum.uniq
-    |> Enum.filter(&Que.Worker.valid?/1)
-    |> Enum.map(&start_server/1)
+    {valid, invalid} =
+      Que.Persistence.incomplete
+      |> Enum.map(&(&1.worker))
+      |> Enum.uniq
+      |> Enum.partition(&Que.Worker.valid?/1)
+
+    # Notify user about pending jobs for Invalid Workers
+    if length(invalid) > 0 do
+      Que.Helpers.log("Found pending jobs for invalid workers: #{inspect(invalid)}")
+    end
+
+    # Process pending jobs for valid workers
+    if length(valid) > 0 do
+      Que.Helpers.log("Found pending jobs for: #{inspect(valid)}")
+      Enum.map(valid, &start_server/1)
+    end
   end
 
 end
