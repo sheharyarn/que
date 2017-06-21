@@ -17,7 +17,11 @@ defmodule Que.ServerSupervisor do
   """
   @spec start_link() :: Supervisor.on_start
   def start_link do
-    Supervisor.start_link(@module, :ok, name: @module)
+    pid = Supervisor.start_link(@module, :ok, name: @module)
+
+    # Resume Pending Jobs
+    resume_queued_jobs()
+    pid
   end
 
 
@@ -63,6 +67,18 @@ defmodule Que.ServerSupervisor do
     ]
 
     supervise(children, strategy: :simple_one_for_one)
+  end
+
+
+
+
+  # Spawn all (valid) Workers with queued jobs
+  defp resume_queued_jobs do
+    Que.Persistence.incomplete
+    |> Enum.map(&(&1.worker))
+    |> Enum.uniq
+    |> Enum.filter(&Que.Worker.valid?/1)
+    |> Enum.map(&start_server/1)
   end
 
 end
