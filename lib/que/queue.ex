@@ -28,7 +28,7 @@ defmodule Que.Queue do
   def new(worker, jobs \\ []) do
     %Que.Queue{
       worker:  worker,
-      queued:  jobs,
+      queued:  :queue.from_list(jobs),
       running: []
     }
   end
@@ -70,11 +70,12 @@ defmodule Que.Queue do
   """
   @spec put(queue :: Que.Queue.t, jobs :: Que.Job.t | list(Que.Job.t)) :: Que.Queue.t
   def put(%Que.Queue{queued: queued} = q, jobs) when is_list(jobs) do
-    %{ q | queued: queued ++ jobs }
+    jobs = :queue.from_list(jobs)
+    %{ q | queued: :queue.join(queued, jobs) }
   end
 
-  def put(queue, job) do
-    put(queue, [job])
+  def put(%Que.Queue{queued: queued} = q, job) do
+    %{ q | queued: :queue.in(job, queued) }
   end
 
 
@@ -84,12 +85,11 @@ defmodule Que.Queue do
   Fetches the next Job in queue and returns a queue and Job tuple
   """
   @spec fetch(queue :: Que.Queue.t) :: { Que.Queue.t, Que.Job.t | nil }
-  def fetch(%Que.Queue{queued: [ job | rest ]} = q) do
-    { %{ q | queued: rest }, job }
-  end
-
-  def fetch(%Que.Queue{queued: []} = q) do
-    { q, nil }
+  def fetch(%Que.Queue{queued: queue} = q) do
+    case :queue.out(queue) do
+      {{:value, job}, rest} -> { %{ q | queued: rest }, job }
+      {:empty, _} -> { q, nil }
+    end
   end
 
 
@@ -109,9 +109,9 @@ defmodule Que.Queue do
     Enum.find(running, &(Map.get(&1, :ref) == value))
   end
 
-  def find(%Que.Queue{ running: running, queued: queued }, key, value) do
-    Enum.find(queued,  &(Map.get(&1, key) == value)) ||
-    Enum.find(running, &(Map.get(&1, key) == value))
+  def find(%Que.Queue{} = q, key, value) do
+    Enum.find(queued(q),  &(Map.get(&1, key) == value)) ||
+    Enum.find(running(q), &(Map.get(&1, key) == value))
   end
 
 
@@ -123,11 +123,12 @@ defmodule Que.Queue do
   """
   @spec update(queue :: Que.Queue.t, job :: Que.Job.t) :: Que.Queue.t
   def update(%Que.Queue{} = q, %Que.Job{} = job) do
-    queued_index = Enum.find_index(q.queued, &(&1.id == job.id))
+    queued = queued(q)
+    queued_index = Enum.find_index(queued, &(&1.id == job.id))
 
     if queued_index do
-      queued = List.replace_at(q.queued, queued_index, job)
-      %{ q | queued: queued }
+      queued = List.replace_at(queued, queued_index, job)
+      %{ q | queued: :queue.from_list(queued) }
 
     else
       running_index = Enum.find_index(q.running, &(&1.id == job.id))
@@ -157,6 +158,28 @@ defmodule Que.Queue do
     else
       raise Que.Error.JobNotFound, "Job not found in Queue"
     end
+  end
+
+
+
+
+  @doc """
+  Returns queued jobs in the Queue
+  """
+  @spec queued(queue :: Que.Queue.t) :: list(Que.Job.t)
+  def queued(%Que.Queue{queued: queued}) do
+    :queue.to_list(queued)
+  end
+
+
+
+
+  @doc """
+  Returns running jobs in the Queue
+  """
+  @spec running(queue :: Que.Queue.t) :: list(Que.Job.t)
+  def running(%Que.Queue{running: running}) do
+    running
   end
 
 end

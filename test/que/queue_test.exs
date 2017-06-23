@@ -12,18 +12,42 @@ defmodule Que.Test.Queue do
   test "#new builds a new job queue with defaults" do
     q = Queue.new(TestWorker)
 
-    assert q.__struct__ == Queue
-    assert q.worker     == TestWorker
-    assert q.queued     == []
-    assert q.running    == []
+    assert q.__struct__     == Queue
+    assert q.worker         == TestWorker
+    assert Queue.queued(q)  == []
+    assert Queue.running(q) == []
   end
 
 
   test "#new builds a new job queue with specified jobs" do
     q = Queue.new(TestWorker, [1, 2, 3])
 
-    assert q.__struct__ == Queue
-    assert q.queued     == [1, 2, 3]
+    assert q.__struct__    == Queue
+    assert Queue.queued(q) == [1, 2, 3]
+  end
+
+
+  test "#queued returns list of queued jobs in the queue" do
+    j1 = []
+    j2 = [1,2,3,4,5,6,7]
+
+    q1 = %Queue{queued: :queue.from_list(j1)}
+    q2 = %Queue{queued: :queue.from_list(j2)}
+
+    assert Queue.queued(q1) == j1
+    assert Queue.queued(q2) == j2
+  end
+
+
+  test "#running returns list of running jobs in the queue" do
+    j1 = []
+    j2 = [1,2,3,4,5,6,7]
+
+    q1 = %Queue{running: j1}
+    q2 = %Queue{running: j2}
+
+    assert Queue.running(q1) == j1
+    assert Queue.running(q2) == j2
   end
 
 
@@ -33,7 +57,7 @@ defmodule Que.Test.Queue do
       |> Queue.new([1, 2, 3])
       |> Queue.put(4)
 
-    assert q.queued == [1, 2, 3, 4]
+    assert Queue.queued(q) == [1, 2, 3, 4]
   end
 
 
@@ -43,7 +67,7 @@ defmodule Que.Test.Queue do
       |> Queue.new([1, 2, 3])
       |> Queue.put([4, 5, 6, 7])
 
-    assert q.queued == [1, 2, 3, 4, 5, 6, 7]
+    assert Queue.queued(q) == [1, 2, 3, 4, 5, 6, 7]
   end
 
 
@@ -53,8 +77,8 @@ defmodule Que.Test.Queue do
       |> Queue.new([1, 2, 3])
       |> Queue.fetch
 
-    assert job      == 1
-    assert q.queued == [2, 3]
+    assert job             == 1
+    assert Queue.queued(q) == [2, 3]
   end
 
 
@@ -64,8 +88,8 @@ defmodule Que.Test.Queue do
       |> Queue.new
       |> Queue.fetch
 
-    assert job      == nil
-    assert q.queued == []
+    assert job             == nil
+    assert Queue.queued(q) == []
   end
 
 
@@ -76,8 +100,8 @@ defmodule Que.Test.Queue do
         |> Queue.new([Job.new(TestWorker)])
         |> Queue.process
 
-      assert [%Job{status: :started}] = q.running
-      assert [] == q.queued
+      assert [%Job{status: :started}] = Queue.running(q)
+      assert [] == Queue.queued(q)
 
       Helpers.wait
     end)
@@ -90,9 +114,9 @@ defmodule Que.Test.Queue do
     q_before = Queue.new(TestWorker)
     q_after  = Queue.process(q_before)
 
-    assert q_after         == q_before
-    assert q_after.queued  == []
-    assert q_after.running == []
+    assert q_after                == q_before
+    assert Queue.queued(q_after)  == []
+    assert Queue.running(q_after) == []
   end
 
 
@@ -109,10 +133,12 @@ defmodule Que.Test.Queue do
         |> Queue.process
         |> Queue.process
 
-      assert [] == q.queued
-      assert 4  == length(q.running)
+      running = Queue.running(q)
 
-      Enum.each(q.running, fn j ->
+      assert [] == Queue.queued(q)
+      assert 4  == length(running)
+
+      Enum.each(running, fn j ->
         assert %Job{status: :started} = j
       end)
 
@@ -171,28 +197,26 @@ defmodule Que.Test.Queue do
 
 
   test "#update updates a job in queued" do
-    q = %{ queued: [_, _, _, job | _] } =
-      %Queue{ queued: sample_job_list(), running: [] }
+    q = %Queue{ queued: :queue.from_list(sample_job_list()), running: [] }
 
+    [_, _, _, job | _] = Queue.queued(q)
     assert job.id     == :x
     assert job.status == :failed
 
-    %{ queued: [_, _, _, job | _] } =
-      Queue.update(q, %{ job | status: :queued })
+    q = Queue.update(q, %{ job | status: :queued })
 
+    [_, _, _, job | _] = Queue.queued(q)
     assert job.status == :queued
   end
 
 
   test "#update updates a job in running" do
-    q = %{ running: [_, _, _, job | _] } =
-      %Queue{ queued: [], running: sample_job_list() }
+    q = %{ running: [_, _, _, job | _] } = %Queue{ queued: :queue.from_list([]), running: sample_job_list() }
 
     assert job.id     == :x
     assert job.status == :failed
 
-    %{ running: [_, _, _, job | _] } =
-      Queue.update(q, %{ job | status: :completed })
+    %{ running: [_, _, _, job | _] } = Queue.update(q, %{ job | status: :completed })
 
     assert job.status == :completed
   end
@@ -200,14 +224,14 @@ defmodule Que.Test.Queue do
 
   test "#remove deletes a job from running in Queue" do
     q = %{ running: [_, _, _, job | _] } =
-      %Queue{ queued: [], running: sample_job_list() }
+      %Queue{ queued: :queue.new(), running: sample_job_list() }
 
-    assert length(q.running) == 6
+    assert length(Queue.running(q)) == 6
 
     q = Queue.remove(q, job)
 
-    assert length(q.running) == 5
-    refute Enum.member?(q.running, job)
+    assert length(Queue.running(q)) == 5
+    refute Enum.member?(Queue.running(q), job)
   end
 
 
