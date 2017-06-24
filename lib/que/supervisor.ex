@@ -15,6 +15,10 @@ defmodule Que.Supervisor do
   """
   @spec start_link() :: Supervisor.on_start
   def start_link do
+    # Initialize Mnesia DB for Jobs
+    Que.Persistence.initialize
+
+    # Start Supervision Tree
     Supervisor.start_link(__MODULE__, :ok, name: __MODULE__)
   end
 
@@ -25,7 +29,7 @@ defmodule Que.Supervisor do
   def init(:ok) do
     children = [
       supervisor(Task.Supervisor, [[name: Que.TaskSupervisor]]),
-      worker(Que.Server, [])
+      supervisor(Que.ServerSupervisor, [])
     ]
 
     supervise(children, strategy: :one_for_one)

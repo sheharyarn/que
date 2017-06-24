@@ -6,17 +6,22 @@ defmodule Que.Helpers do
 
 
   ## Helper Module for `Que`. Exports methods that are used in the
-  ## project internally. Not meant for used as part of the Public
+  ## project internally. Not meant to be used as part of the Public
   ## API.
 
 
 
   @doc """
   Logger wrapper for internal Que use.
+
+  Doesn't log messages if the specified level is `:low` and the
+  enviroment is `:test`.
   """
-  @spec log(message :: String.t) :: :ok
-  def log(message) do
-    Logger.info("#{@prefix} #{message}")
+  @spec log(message :: String.t, level :: atom) :: :ok
+  def log(message, level \\ :medium) do
+    unless (Mix.env == :test && level == :low) do
+      Logger.info("#{@prefix} #{message}")
+    end
   end
 
 
