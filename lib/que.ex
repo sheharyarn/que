@@ -87,6 +87,7 @@ defmodule Que do
   Starts the Que Application (and its Supervision Tree)
   """
   def start(_type, _args) do
+    Que.Helpers.log("Booting Que", :low)
     Que.Supervisor.start_link
   end
 

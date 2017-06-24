@@ -21,6 +21,7 @@ defmodule Que.Server do
   """
   @spec start_link(worker :: Que.Worker.t) :: GenServer.on_start
   def start_link(worker) do
+    Que.Helpers.log("Spawning Server for worker: #{inspect(worker)}", :low)
     GenServer.start_link(@module, {:ok, worker}, name: for_worker(worker))
   end
 

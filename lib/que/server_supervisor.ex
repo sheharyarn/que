@@ -17,6 +17,7 @@ defmodule Que.ServerSupervisor do
   """
   @spec start_link() :: Supervisor.on_start
   def start_link do
+    Que.Helpers.log("Booting Server Supervisor for Workers", :low)
     pid = Supervisor.start_link(@module, :ok, name: @module)
 
     # Resume Pending Jobs
@@ -33,14 +34,7 @@ defmodule Que.ServerSupervisor do
   @spec start_server(worker :: Que.Worker.t) :: Supervisor.on_start_child | no_return
   def start_server(worker) do
     Que.Worker.validate!(worker)
-
-    case Supervisor.start_child(@module, [worker]) do
-      {:ok, pid} ->
-        Que.Helpers.log("Spawned new Server for worker #{ExUtils.Module.name(worker)}")
-        {:ok, pid}
-
-      error -> error
-    end
+    Supervisor.start_child(@module, [worker])
   end
 
 
@@ -93,3 +87,4 @@ defmodule Que.ServerSupervisor do
   end
 
 end
+
