@@ -12,7 +12,7 @@ Que is a job processing library backed by [`Mnesia`][mnesia], a distributed
 real-time database that comes with Erlang / Elixir. That means it doesn't
 depend on any external services like `Redis` for persisting job state. This
 makes it really easy to use since you don't need to install anything other
-Que itself.
+than Que itself.
 
 See the [Documentation][docs].
 
