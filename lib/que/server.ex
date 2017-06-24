@@ -22,7 +22,7 @@ defmodule Que.Server do
   @spec start_link(worker :: Que.Worker.t) :: GenServer.on_start
   def start_link(worker) do
     Que.Helpers.log("Spawning Server for worker: #{inspect(worker)}", :low)
-    GenServer.start_link(@module, {:ok, worker}, name: for_worker(worker))
+    GenServer.start_link(@module, {:ok, worker}, name: via_worker(worker))
   end
 
 
@@ -34,7 +34,7 @@ defmodule Que.Server do
   @spec stop(worker :: Que.Worker.t) :: :ok
   def stop(worker) do
     worker
-    |> for_worker
+    |> via_worker
     |> GenServer.stop
   end
 
@@ -50,7 +50,7 @@ defmodule Que.Server do
 
   @doc false
   def add(worker, arg) do
-    GenServer.call(for_worker(worker), {:add_job, worker, arg})
+    GenServer.call(via_worker(worker), {:add_job, worker, arg})
   end
 
 
@@ -142,7 +142,7 @@ defmodule Que.Server do
   @doc false
   def exists?(worker) do
     worker
-    |> for_worker
+    |> via_worker
     |> GenServer.whereis
   end
 
@@ -151,7 +151,7 @@ defmodule Que.Server do
 
   # Get Server Name from Worker
 
-  defp for_worker(worker) do
+  defp via_worker(worker) do
     {:global, {@module, worker}}
   end
 
