@@ -27,7 +27,7 @@ Add `que` to your project dependencies in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:que, "~> 0.4.0"}]
+  [{:que, "~> 0.3.2"}]
 end
 ```
 
@@ -42,9 +42,9 @@ end
 
 ### Mnesia Setup
 
-Que runs out of the box, but by default all jobs are stored in-memory.
-To persist jobs across application restarts, specify the DB path in
-your `config.exs`:
+Que runs out of the box, but by default all jobs are stored in-memory
+only. To persist jobs across application restarts, specify the DB
+path in your `config.exs`:
 
 ```elixir
 config :mnesia, dir: 'mnesia/#{Mix.env}/#{node()}'        # Notice the single quotes
