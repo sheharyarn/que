@@ -3,7 +3,7 @@ defmodule Que.Mixfile do
 
   @app     :que
   @name    "Que"
-  @version "0.3.2"
+  @version "0.4.0"
   @github  "https://github.com/sheharyarn/#{@app}"
 
 
@@ -41,7 +41,7 @@ defmodule Que.Mixfile do
   defp deps do
     [
       {:amnesia,  "~> 0.2"                },
-      {:ex_utils, ">= 0.0.0"              },
+      {:ex_utils, "~> 0.1.6"              },
       {:ex_doc,   ">= 0.0.0", only: :dev  },
       {:inch_ex,  ">= 0.0.0", only: :docs }
     ]
