@@ -1,8 +1,11 @@
 defmodule Que.Helpers do
   require Logger
 
-  @moduledoc false
   @prefix "[Que]"
+  @moduledoc false
+
+  @log_levels [low: 0, medium: 1, high: 2]
+  @min_level Application.get_env(:que, :log_level, :low)
 
 
   ## Helper Module for `Que`. Exports methods that are used in the
@@ -19,7 +22,7 @@ defmodule Que.Helpers do
   """
   @spec log(message :: String.t, level :: atom) :: :ok
   def log(message, level \\ :medium) do
-    unless (Mix.env == :test && level == :low) do
+    if (level_value(level) >= level_value(@min_level)) do
       Logger.info("#{@prefix} #{message}")
     end
   end
@@ -32,6 +35,13 @@ defmodule Que.Helpers do
   @spec do_task((() -> any)) :: {:ok, pid}
   def do_task(fun) do
     Task.Supervisor.start_child(Que.TaskSupervisor, fun)
+  end
+
+
+
+  # Convert Log Level to Integer
+  defp level_value(level) when is_atom(level) do
+    @log_levels[level] || 0
   end
 
 end

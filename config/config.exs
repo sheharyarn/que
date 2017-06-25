@@ -26,6 +26,12 @@ config :mnesia,
   dir: 'mnesia/#{Mix.env}/#{node()}'
 
 
+
+if Mix.env == :test do
+  config :que, log_level: :medium
+end
+
+
 # It is also possible to import configuration files, relative to this
 # directory. For example, you can emulate configuration per environment
 # by uncommenting the line below and defining dev.exs, test.exs and such.
