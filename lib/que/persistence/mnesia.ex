@@ -131,6 +131,8 @@ defmodule Que.Persistence.Mnesia do
     deftable Jobs, [{:id, autoincrement}, :arguments, :worker, :status, :ref, :pid, :created_at, :updated_at],
       type:  :ordered_set do
 
+      use Memento.Query
+
       @store     __MODULE__
       @moduledoc false
 
@@ -138,81 +140,86 @@ defmodule Que.Persistence.Mnesia do
 
       @doc "Finds all Jobs"
       def all_jobs do
-        Amnesia.transaction do
-          keys()
-          |> match
-          |> parse_selection
-        end
+        # Empty Pattern - Matches all
+        run_query([])
       end
 
 
 
       @doc "Find all Jobs for a worker"
       def all_jobs(name) do
-        Amnesia.transaction do
-          where(worker == name)
-          |> parse_selection
-        end
+        run_query(
+          {:==, :worker, name}
+        )
       end
 
 
 
       @doc "Find Completed Jobs"
       def completed_jobs do
-        Amnesia.transaction do
-          where(status == :completed)
-          |> parse_selection
-        end
+        run_query(
+          {:==, :status, :completed}
+        )
       end
 
 
 
       @doc "Find Completed Jobs for worker"
       def completed_jobs(name) do
-        Amnesia.transaction do
-          where(worker == name and status == :completed)
-          |> parse_selection
-        end
+        run_query(
+          {:and,
+            {:==, :worker, name},
+            {:==, :status, :completed}
+          }
+        )
       end
 
 
 
       @doc "Find Incomplete Jobs"
       def incomplete_jobs do
-        Amnesia.transaction do
-          where(status == :queued or status == :started)
-          |> parse_selection
-        end
+        run_query(
+          {:or,
+            {:==, :status, :queued},
+            {:==, :status, :started}
+          }
+        )
       end
 
 
 
       @doc "Find Incomplete Jobs for worker"
       def incomplete_jobs(name) do
-        Amnesia.transaction do
-          where(worker == name and (status == :queued or status == :started))
-          |> parse_selection
-        end
+        run_query(
+          {:and,
+            {:==, :worker, name},
+            {:or,
+              {:==, :status, :queued},
+              {:==, :status, :started}
+            }
+          }
+        )
       end
 
 
 
       @doc "Find Failed Jobs"
       def failed_jobs do
-        Amnesia.transaction do
-          where(status == :failed)
-          |> parse_selection
-        end
+        run_query(
+          {:==, :status, :failed}
+        )
       end
 
 
 
       @doc "Find Failed Jobs for worker"
       def failed_jobs(name) do
-        Amnesia.transaction do
-          where(worker == name and status == :failed)
-          |> parse_selection
-        end
+        run_query(
+          {:and,
+            {:==, :worker, name},
+            {:==, :status, :failed}
+          }
+        )
       end
 
 
@@ -266,6 +273,16 @@ defmodule Que.Persistence.Mnesia do
       ## PRIVATE METHODS
 
 
+      # Execute a Memento Query
+      defp run_query(pattern) do
+        Amnesia.transaction do
+          pattern
+          |> Memento.Query.query
+          |> Enum.map(&to_que_job/1)
+        end
+      end
+
+
       # Returns Job ID
       defp normalize_id(job) do
         cond do
@@ -289,14 +306,6 @@ defmodule Que.Persistence.Mnesia do
         struct(Que.Job, Map.from_struct(job))
       end
 
-
-
-      # Convert Selection to Que.Job struct list
-      defp parse_selection(selection) do
-        selection
-        |> Amnesia.Selection.values
-        |> Enum.map(&to_que_job/1)
-      end
 
     end
   end

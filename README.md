@@ -175,6 +175,7 @@ Head over to Hexdocs for detailed [`Worker` documentation][docs-worker].
     - [x] Make jobs work in Parallel
     - [x] Allow customizing the number of concurrent jobs
  - [x] Success/Failure Callbacks
+ - [ ] Find a more reliable replacement for Amnesia
  - [ ] Delayed Jobs
  - [ ] Allow job cancellation
  - [x] Mix Task for creating Mnesia Database
