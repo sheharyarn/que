@@ -154,7 +154,7 @@ defmodule Que.Persistence do
   # Macro so future adapters `use` this module
   defmacro __using__(_opts) do
     quote do
-      @parent unquote(__MODULE__)
+      @behaviour unquote(__MODULE__)
     end
   end
 
