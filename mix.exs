@@ -34,18 +34,17 @@ defmodule Que.Mixfile do
   def application do
     [
       mod: {Que, []},
-      applications: [:logger, :amnesia]
+      applications: [:logger, :memento]
     ]
   end
 
 
   defp deps do
     [
-      {:amnesia,  "~> 0.2"                },
-      {:memento,  "~> 0.0.1"              },
+      {:memento,  "~> 0.2.0"              },
       {:ex_utils, "~> 0.1.6"              },
       {:ex_doc,   ">= 0.0.0", only: :dev  },
-      {:inch_ex,  ">= 0.0.0", only: :docs }
+      {:inch_ex,  ">= 0.0.0", only: :docs },
     ]
   end
 
