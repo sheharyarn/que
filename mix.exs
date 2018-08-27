@@ -16,6 +16,7 @@ defmodule Que.Mixfile do
       description:  description(),
       package:      package(),
       deps:         deps(),
+      elixirc_paths: elixirc_paths(Mix.env),
 
       # ExDoc
       name:         @name,
@@ -52,6 +53,11 @@ defmodule Que.Mixfile do
   defp description do
     "Simple Background Job Processing with Mnesia"
   end
+
+  # Compilation Paths
+  defp elixirc_paths(:dev),  do: elixirc_paths(:test)
+  defp elixirc_paths(:test), do: ["lib", "test/support.ex"]
+  defp elixirc_paths(_),     do: ["lib"]
 
 
   defp package do
