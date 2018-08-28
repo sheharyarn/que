@@ -17,6 +17,6 @@ erl_crash.dump
 *.ez
 
 # Mnesia DB
-Mnesia.nonode@nohost
-mnesia
+/Mnesia.nonode@nohost
+/.mnesia
 
