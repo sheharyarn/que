@@ -1,6 +1,5 @@
 defmodule Que.Persistence.Mnesia do
   use Que.Persistence
-  use Amnesia
 
 
   @moduledoc """
@@ -41,11 +40,8 @@ defmodule Que.Persistence.Mnesia do
   """
 
 
-  @config [
-    db:     DB,
-    table:  Jobs
-  ]
 
+  @config [db: DB, table: Jobs]
   @db     Module.concat(__MODULE__, @config[:db])
   @store  Module.concat(@db, @config[:table])
 
@@ -99,13 +95,16 @@ defmodule Que.Persistence.Mnesia do
     end
 
     # Create the Schema
-    Amnesia.stop
-    Amnesia.Schema.create(nodes)
-    Amnesia.start
+    Memento.stop
+    Memento.Schema.create(nodes)
+    Memento.start
 
     # Create the DB with Disk Copies
-    @db.create!(disk: nodes)
-    @db.wait(15000)
+    # TODO:
+    # Use Memento.Table.wait when it gets implemented
+    # @db.create!(disk: nodes)
+    # @db.wait(15000)
+    Memento.Table.create!(@table, disc_copies: nodes)
   end
 
 
@@ -125,197 +124,16 @@ defmodule Que.Persistence.Mnesia do
 
 
 
-  defdatabase DB do
-    @moduledoc false
-
-    deftable Jobs, [{:id, autoincrement}, :arguments, :worker, :status, :ref, :pid, :created_at, :updated_at],
-      type:  :ordered_set do
-
-      use Memento.Query
-
-      @store     __MODULE__
-      @moduledoc false
-
-
-
-      @doc "Finds all Jobs"
-      def all_jobs do
-        # Empty Pattern - Matches all
-        run_query([])
-      end
-
-
-
-      @doc "Find all Jobs for a worker"
-      def all_jobs(name) do
-        run_query(
-          {:==, :worker, name}
-        )
-      end
-
-
-
-      @doc "Find Completed Jobs"
-      def completed_jobs do
-        run_query(
-          {:==, :status, :completed}
-        )
-      end
-
-
-
-      @doc "Find Completed Jobs for worker"
-      def completed_jobs(name) do
-        run_query(
-          {:and,
-            {:==, :worker, name},
-            {:==, :status, :completed}
-          }
-        )
-      end
-
-
-
-      @doc "Find Incomplete Jobs"
-      def incomplete_jobs do
-        run_query(
-          {:or,
-            {:==, :status, :queued},
-            {:==, :status, :started}
-          }
-        )
-      end
-
-
-
-      @doc "Find Incomplete Jobs for worker"
-      def incomplete_jobs(name) do
-        run_query(
-          {:and,
-            {:==, :worker, name},
-            {:or,
-              {:==, :status, :queued},
-              {:==, :status, :started}
-            }
-          }
-        )
-      end
-
-
-
-      @doc "Find Failed Jobs"
-      def failed_jobs do
-        run_query(
-          {:==, :status, :failed}
-        )
-      end
-
-
-
-      @doc "Find Failed Jobs for worker"
-      def failed_jobs(name) do
-        run_query(
-          {:and,
-            {:==, :worker, name},
-            {:==, :status, :failed}
-          }
-        )
-      end
-
-
-
-      @doc "Finds a Job in the DB"
-      def find_job(job) do
-        Amnesia.transaction do
-          job
-          |> normalize_id
-          |> read
-          |> to_que_job
-        end
-      end
-
-
-
-      @doc "Inserts a new Que.Job in to DB"
-      def create_job(job) do
-        job
-        |> Map.put(:created_at, NaiveDateTime.utc_now)
-        |> update_job
-      end
-
-
-
-      @doc "Updates existing Que.Job in DB"
-      def update_job(job) do
-        Amnesia.transaction do
-          job
-          |> Map.put(:updated_at, NaiveDateTime.utc_now)
-          |> to_db_job
-          |> write
-          |> to_que_job
-        end
-      end
-
-
-
-      @doc "Deletes a Que.Job from the DB"
-      def delete_job(job) do
-        Amnesia.transaction do
-          job
-          |> normalize_id
-          |> delete
-        end
-      end
-
-
-
-
-      ## PRIVATE METHODS
-
-
-      # Execute a Memento Query
-      defp run_query(pattern) do
-        Amnesia.transaction do
-          pattern
-          |> Memento.Query.query
-          |> Enum.map(&to_que_job/1)
-        end
-      end
-
-
-      # Returns Job ID
-      defp normalize_id(job) do
-        cond do
-          is_map(job) -> job.id
-          true        -> job
-        end
-      end
-
-
-
-      # Convert Que.Job to Mnesia Job
-      defp to_db_job(%Que.Job{} = job) do
-        struct(@store, Map.from_struct(job))
-      end
-
-
-
-      # Convert Mnesia DB Job to Que.Job
-      defp to_que_job(nil), do: nil
-      defp to_que_job(%@store{} = job) do
-        struct(Que.Job, Map.from_struct(job))
-      end
-
-
-    end
-  end
-
+  # Callbacks in Table Definition
+  # -----------------------------
 
 
   # Make sures that the DB exists (either
   # in memory or on disk)
   @doc false
-  def initialize, do: @db.create
+  def initialize do
+    Memento.Table.create(@store)
+  end
 
 
   @doc false
