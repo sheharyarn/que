@@ -21,7 +21,7 @@ defmodule Que.Persistence do
 
   Returns the a Job struct if it's found, otherwise `nil`.
   """
-  @spec find(id :: integer) :: Que.Job.t | nil
+  @callback find(id :: integer) :: Que.Job.t | nil
   defdelegate find(id), to: @adapter
 
 
@@ -30,7 +30,7 @@ defmodule Que.Persistence do
   @doc """
   Deletes a `Que.Job` from the database.
   """
-  @spec destroy(id :: integer) :: :ok | no_return
+  @callback destroy(id :: integer) :: :ok | no_return
   defdelegate destroy(id), to: @adapter
 
 
@@ -41,7 +41,7 @@ defmodule Que.Persistence do
 
   Returns the same Job struct with the `id` value set
   """
-  @spec insert(job :: Que.Job.t) :: Que.Job.t
+  @callback insert(job :: Que.Job.t) :: Que.Job.t
   defdelegate insert(job), to: @adapter
 
 
@@ -57,7 +57,7 @@ defmodule Que.Persistence do
 
   Returns the updated job.
   """
-  @spec update(job :: Que.Job.t) :: Que.Job.t
+  @callback update(job :: Que.Job.t) :: Que.Job.t
   defdelegate update(job), to: @adapter
 
 
@@ -66,7 +66,7 @@ defmodule Que.Persistence do
   @doc """
   Returns all `Que.Job`s in the database.
   """
-  @spec all :: list(Que.Job.t)
+  @callback all :: list(Que.Job.t)
   defdelegate all, to: @adapter
 
 
@@ -75,7 +75,7 @@ defmodule Que.Persistence do
   @doc """
   Returns all `Que.Job`s for the given worker.
   """
-  @spec all(worker :: Que.Worker.t) :: list(Que.Job.t)
+  @callback all(worker :: Que.Worker.t) :: list(Que.Job.t)
   defdelegate all(worker), to: @adapter
 
 
@@ -84,7 +84,7 @@ defmodule Que.Persistence do
   @doc """
   Returns completed `Que.Job`s from the database.
   """
-  @spec completed :: list(Que.Job.t)
+  @callback completed :: list(Que.Job.t)
   defdelegate completed, to: @adapter
 
 
@@ -93,7 +93,7 @@ defmodule Que.Persistence do
   @doc """
   Returns completed `Que.Job`s for the given worker.
   """
-  @spec completed(worker :: Que.Worker.t) :: list(Que.Job.t)
+  @callback completed(worker :: Que.Worker.t) :: list(Que.Job.t)
   defdelegate completed(worker), to: @adapter
 
 
@@ -105,7 +105,7 @@ defmodule Que.Persistence do
   This includes all Jobs whose status is either
   `:queued` or `:started` but not `:failed`.
   """
-  @spec incomplete :: list(Que.Job.t)
+  @callback incomplete :: list(Que.Job.t)
   defdelegate incomplete, to: @adapter
 
 
@@ -114,7 +114,7 @@ defmodule Que.Persistence do
   @doc """
   Returns incomplete `Que.Job`s for the given worker.
   """
-  @spec incomplete(worker :: Que.Worker.t) :: list(Que.Job.t)
+  @callback incomplete(worker :: Que.Worker.t) :: list(Que.Job.t)
   defdelegate incomplete(worker), to: @adapter
 
 
@@ -123,7 +123,7 @@ defmodule Que.Persistence do
   @doc """
   Returns failed `Que.Job`s from the database.
   """
-  @spec failed :: list(Que.Job.t)
+  @callback failed :: list(Que.Job.t)
   defdelegate failed, to: @adapter
 
 
@@ -132,7 +132,7 @@ defmodule Que.Persistence do
   @doc """
   Returns failed `Que.Job`s for the given worker.
   """
-  @spec failed(worker :: Que.Worker.t) :: list(Que.Job.t)
+  @callback failed(worker :: Que.Worker.t) :: list(Que.Job.t)
   defdelegate failed(worker), to: @adapter
 
 
@@ -145,7 +145,7 @@ defmodule Que.Persistence do
   `Que.Server`, starts to make sure that a database exists
   and is ready to be used.
   """
-  @spec initialize :: :ok | :error
+  @callback initialize :: :ok | :error
   defdelegate initialize, to: @adapter
 
 
