@@ -122,17 +122,17 @@ defmodule Que.Test.Meta do
 
     # Cleans up Mnesia DB
     def reset do
-      Que.Persistence.Mnesia.DB.destroy
-      Que.Persistence.Mnesia.DB.create
+      Memento.Table.delete(Que.Persistence.Mnesia.DB.Jobs)
+      Memento.Table.create(Que.Persistence.Mnesia.DB.Jobs)
       :ok
     end
 
     # Deletes the Mnesia DB from disk and creates a fresh one in memory
     def reset! do
       Helpers.capture_log(fn ->
-        Amnesia.stop
+        Memento.stop
         File.rm_rf!(Que.Persistence.Mnesia.__config__[:path])
-        Amnesia.start
+        Memento.start
 
         reset()
       end)
