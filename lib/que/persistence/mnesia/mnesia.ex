@@ -104,7 +104,7 @@ defmodule Que.Persistence.Mnesia do
     # Use Memento.Table.wait when it gets implemented
     # @db.create!(disk: nodes)
     # @db.wait(15000)
-    Memento.Table.create!(@table, disc_copies: nodes)
+    Memento.Table.create!(@store, disc_copies: nodes)
   end
 
 

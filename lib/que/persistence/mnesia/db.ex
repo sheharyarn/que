@@ -150,7 +150,7 @@ defmodule Que.Persistence.Mnesia.DB do
 
     @doc "Deletes a Que.Job from the DB"
     def delete_job(job) do
-      Memento.transaction! do
+      Memento.transaction! fn ->
         job
         |> normalize_id
         |> delete
