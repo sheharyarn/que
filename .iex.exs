@@ -3,13 +3,13 @@ alias Que.{
   Worker,
   Job,
   Server,
-}
 
-alias Que.Test.Meta.{
-  TestWorker,
-  SuccessWorker,
-  FailureWorker,
-  ConcurrentWorker,
-  SleepWorker,
+  Test.Meta,
+  Test.Meta.Helpers,
+  Test.Meta.TestWorker,
+  Test.Meta.SuccessWorker,
+  Test.Meta.FailureWorker,
+  Test.Meta.ConcurrentWorker,
+  Test.Meta.SleepWorker,
 }
 
