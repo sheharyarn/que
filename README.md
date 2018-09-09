@@ -27,7 +27,7 @@ Add `que` to your project dependencies in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:que, "~> 0.5.0"}]
+  [{:que, "~> 0.7.0"}]
 end
 ```
 
@@ -175,7 +175,7 @@ Head over to Hexdocs for detailed [`Worker` documentation][docs-worker].
     - [x] Make jobs work in Parallel
     - [x] Allow customizing the number of concurrent jobs
  - [x] Success/Failure Callbacks
- - [ ] Find a more reliable replacement for Amnesia
+ - [x] Find a more reliable replacement for Amnesia
  - [ ] Delayed Jobs
  - [ ] Allow job cancellation
  - [x] Mix Task for creating Mnesia Database
