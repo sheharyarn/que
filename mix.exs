@@ -7,6 +7,15 @@ defmodule Que.Mixfile do
   @github  "https://github.com/sheharyarn/#{@app}"
 
 
+  # NOTE:
+  # To publish package or update docs, use the `docs`
+  # mix environment to not include support modules
+  # that are normally included in the `dev` environment
+  #
+  #   MIX_ENV=docs hex.publish
+  #
+
+
   def project do
     [
       # Project
@@ -43,7 +52,7 @@ defmodule Que.Mixfile do
     [
       {:memento,  "~> 0.2.1"              },
       {:ex_utils, "~> 0.1.6"              },
-      {:ex_doc,   ">= 0.0.0", only: :dev  },
+      {:ex_doc,   ">= 0.0.0", only: :docs },
       {:inch_ex,  ">= 0.0.0", only: :docs },
     ]
   end
