@@ -59,6 +59,7 @@ defmodule Que.Job do
 
     {:ok, pid} =
       Que.Helpers.do_task(fn ->
+        job.worker.on_setup(job)
         job.worker.perform(job.arguments)
       end)
 
@@ -78,6 +79,7 @@ defmodule Que.Job do
 
     Que.Helpers.do_task(fn ->
       job.worker.on_success(job.arguments)
+      job.worker.on_teardown(job)
     end)
 
     %{ job | status: :completed, pid: nil, ref: nil }
@@ -96,6 +98,7 @@ defmodule Que.Job do
 
     Que.Helpers.do_task(fn ->
       job.worker.on_failure(job.arguments, error)
+      job.worker.on_teardown(job)
     end)
 
     %{ job | status: :failed, pid: nil, ref: nil }
