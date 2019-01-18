@@ -16,6 +16,12 @@ Changelog
 
 
 
+## Before v0.7.0
 
+I don't remember tbh. Check the [commit history][commits].
+
+
+
+  [commits]: https://github.com/sheharyarn/que/commits/master
   [memento]: https://github.com/sheharyarn/memento
   [amnesia]: https://github.com/meh/amnesia/
