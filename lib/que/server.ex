@@ -90,7 +90,7 @@ defmodule Que.Server do
       |> Que.Queue.put(job)
       |> Que.Queue.process
 
-    {:reply, :ok, queue}
+    {:reply, {:ok, job}, queue}
   end
 
 

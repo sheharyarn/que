@@ -63,4 +63,19 @@ defmodule Que.Test.Server do
     Que.Server.stop(TestWorker)
   end
 
+  @tag capture_log: true
+  test "#add returns the enqueued job" do
+    Que.Server.start_link(TestWorker)
+
+    {:ok, job} = Que.Server.add(TestWorker, "my_arg")
+
+    assert match?(%Que.Job{
+      arguments: "my_arg",
+      id: 1,
+      status: :queued,
+      worker: TestWorker,
+    }, job)
+
+    Que.Server.stop(TestWorker)
+  end
 end
