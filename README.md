@@ -178,6 +178,12 @@ Head over to Hexdocs for detailed [`Worker` documentation][docs-worker].
  - [x] Find a more reliable replacement for Amnesia
  - [ ] Delayed Jobs
  - [ ] Allow job cancellation
+ - [ ] Job Priority
+ - [ ] Support running in a multi-node enviroment
+    - [ ] Recover from node failures
+ - [ ] Support for more Persistence Adapters
+    - [ ] Redis
+    - [ ] Postgres
  - [x] Mix Task for creating Mnesia Database
  - [ ] Better Job Failures
     - [ ] Option to set timeout on workers
