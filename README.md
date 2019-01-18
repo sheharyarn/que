@@ -27,7 +27,7 @@ Add `que` to your project dependencies in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:que, "~> 0.7.0"}]
+  [{:que, "~> 0.8.0"}]
 end
 ```
 
@@ -87,7 +87,7 @@ You can now add jobs to be processed by the worker:
 
 ```elixir
 Que.add(App.Workers.ImageConverter, some_image)
-#=> :ok
+#=> {:ok, %Que.Job{...}}
 ```
 
 
