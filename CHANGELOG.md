@@ -2,6 +2,14 @@ Changelog
 =========
 
 
+## Version 0.9.0
+
+ - Update [Memento][memento] dependency to v0.3.0
+     - This fixes issues where Mnesia would throw cyclic abort errors in high
+       concurrency, nested worker calls leading to mnesia transaction deadlocks
+
+
+
 ## Version 0.8.0
 
  - Enqueuing a job now returns `{:ok, job}` instead of just `:ok`
