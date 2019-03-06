@@ -50,7 +50,7 @@ defmodule Que.Mixfile do
 
   defp deps do
     [
-      {:memento,  "~> 0.2.1"              },
+      {:memento,  "~> 0.3.0"              },
       {:ex_utils, "~> 0.1.6"              },
       {:ex_doc,   ">= 0.0.0", only: :docs },
       {:inch_ex,  ">= 0.0.0", only: :docs },
