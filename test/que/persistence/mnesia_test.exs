@@ -158,4 +158,24 @@ defmodule Que.Test.Persistence.Mnesia do
 
     assert [c1, c2, s, q1, q2] == Mnesia.all
   end
+
+  test "works reliably for nested transactions under high load" do
+    defmodule WorkerA do
+      use Que.Worker, concurrency: 20
+      def perform(_), do: nil
+    end
+
+    defmodule WorkerB do
+      use Que.Worker, concurrency: 5
+      def perform(_), do: Que.add(WorkerA, nil)
+    end
+
+    capture = Helpers.capture_log(fn ->
+      Enum.each(1..100, fn _ -> Que.add(WorkerB, nil) end)
+      Process.sleep(500) # Sleep until all jobs are processed
+    end)
+
+    assert capture =~ "[info]"
+    refute capture =~ "[error]"
+  end
 end
