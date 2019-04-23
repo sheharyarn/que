@@ -72,7 +72,7 @@ defmodule Que.ServerSupervisor do
       Que.Persistence.incomplete
       |> Enum.map(&(&1.worker))
       |> Enum.uniq
-      |> Enum.partition(&Que.Worker.valid?/1)
+      |> Enum.split_with(&Que.Worker.valid?/1)
 
     # Notify user about pending jobs for Invalid Workers
     if length(invalid) > 0 do
