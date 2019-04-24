@@ -6,6 +6,7 @@ defmodule Que.Test.Job do
   alias Que.Test.Meta.TestWorker
   alias Que.Test.Meta.SuccessWorker
   alias Que.Test.Meta.FailureWorker
+  alias Que.Test.Meta.SetupAndTeardownWorker
 
 
   test "#new builds a new Job struct with defaults" do
@@ -56,11 +57,53 @@ defmodule Que.Test.Job do
       refute job.pid    == nil
       refute job.ref    == nil
 
-      Helpers.wait
+      Helpers.wait_for_children
     end)
 
     assert capture =~ ~r/Starting/
     assert capture =~ ~r/perform: nil/
+  end
+
+
+  test "#perform triggers the worker's on_setup and on_teardown callbacks on success" do
+    capture = Helpers.capture_log(fn ->
+      job =
+        SetupAndTeardownWorker
+        |> Job.new
+        |> Job.perform
+        |> Job.handle_success
+
+      assert job.status == :completed
+      assert job.pid    == nil
+      assert job.ref    == nil
+
+      Helpers.wait_for_children
+    end)
+
+    assert capture =~ ~r/Completed/
+    assert capture =~ ~r/on_setup: %Que.Job/
+    assert capture =~ ~r/on_teardown: %Que.Job/
+  end
+
+
+  test "#perform triggers the worker's on_setup and on_teardown callbacks on failure" do
+    capture = Helpers.capture_log(fn ->
+      job =
+        SetupAndTeardownWorker
+        |> Job.new
+        |> Job.perform
+        |> Job.handle_failure("some error")
+
+      assert job.status == :failed
+      assert job.pid    == nil
+      assert job.ref    == nil
+
+      Helpers.wait_for_children
+    end)
+
+    assert capture =~ ~r/Failed/
+    assert capture =~ ~r/on_setup: %Que.Job/
+    assert capture =~ ~r/on_teardown: %Que.Job/
   end
 
 
@@ -75,7 +118,7 @@ defmodule Que.Test.Job do
       assert job.pid    == nil
       assert job.ref    == nil
 
-      Helpers.wait
+      Helpers.wait_for_children
     end)
 
     assert capture =~ ~r/Completed/
@@ -94,7 +137,7 @@ defmodule Que.Test.Job do
       assert job.pid    == nil
       assert job.ref    == nil
 
-      Helpers.wait
+      Helpers.wait_for_children
     end)
 
     assert capture =~ ~r/Failed/

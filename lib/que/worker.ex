@@ -174,7 +174,15 @@ defmodule Que.Worker do
       end
 
 
-      defoverridable [on_success: 1, on_failure: 2]
+      def on_setup(_job) do
+      end
+
+
+      def on_teardown(_job) do
+      end
+
+
+      defoverridable [on_success: 1, on_failure: 2, on_setup: 1, on_teardown: 1]
 
 
 
@@ -232,4 +240,20 @@ defmodule Que.Worker do
   """
   @callback on_failure(arguments :: term, error :: tuple) :: term
 
+
+
+
+  @doc """
+  Optional callback that is executed before the job is started.
+  """
+  @callback on_setup(job :: term) :: term
+
+
+
+
+  @doc """
+  Optional callback that is executed after the job finishes,
+  both on success and failure.
+  """
+  @callback on_teardown(job :: term) :: term
 end

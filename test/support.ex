@@ -56,6 +56,15 @@ defmodule Que.Test.Meta do
   end
 
 
+  defmodule SetupAndTeardownWorker do
+    use Que.Worker
+
+    def perform(args), do: Logger.debug("#{__MODULE__} - perform: #{inspect(args)}")
+    def on_setup(job), do: Logger.debug("#{__MODULE__} - on_setup: #{inspect(job)}")
+    def on_teardown(job), do: Logger.debug("#{__MODULE__} - on_teardown: #{inspect(job)}")
+  end
+
+
 
 
   # Helper Module for Tests
@@ -66,6 +75,16 @@ defmodule Que.Test.Meta do
     # Sleeps for 2ms
     def wait(ms \\ 3) do
       :timer.sleep(ms)
+    end
+
+    def wait_for_children do
+      Task.Supervisor.children(Que.TaskSupervisor)
+      |> Enum.map(&Process.monitor/1)
+      |> Enum.each(fn ref ->
+        receive do
+          {:DOWN, ^ref, _, _, _} -> nil
+        end
+      end)
     end
 
     # Captures IO output
