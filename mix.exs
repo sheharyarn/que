@@ -43,7 +43,7 @@ defmodule Que.Mixfile do
   def application do
     [
       mod: {Que, []},
-      applications: [:logger, :memento]
+      applications: [:logger, :memento, :ex_utils]
     ]
   end
 
