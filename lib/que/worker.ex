@@ -155,6 +155,7 @@ defmodule Que.Worker do
   @doc false
   defmacro __using__(opts \\ []) do
     quote bind_quoted: [opts: opts] do
+      @behaviour Que.Worker
       @after_compile __MODULE__
       @concurrency   opts[:concurrency] || 1
 
