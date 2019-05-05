@@ -59,7 +59,7 @@ defmodule Que.Job do
 
     {:ok, pid} =
       Que.Helpers.do_task(fn ->
-        job.worker.on_setup(job)
+        job.worker.on_setup(job.arguments)
         job.worker.perform(job.arguments)
       end)
 
@@ -79,7 +79,7 @@ defmodule Que.Job do
 
     Que.Helpers.do_task(fn ->
       job.worker.on_success(job.arguments)
-      job.worker.on_teardown(job)
+      job.worker.on_teardown(job.arguments)
     end)
 
     %{ job | status: :completed, pid: nil, ref: nil }
@@ -98,7 +98,7 @@ defmodule Que.Job do
 
     Que.Helpers.do_task(fn ->
       job.worker.on_failure(job.arguments, error)
-      job.worker.on_teardown(job)
+      job.worker.on_teardown(job.arguments)
     end)
 
     %{ job | status: :failed, pid: nil, ref: nil }
@@ -111,7 +111,6 @@ end
 ## Implementing the String.Chars protocol for Que.Job structs
 
 defimpl String.Chars, for: Que.Job do
-
   def to_string(job) do
     "Job # #{job.id} with #{ExUtils.Module.name(job.worker)}"
   end

@@ -155,7 +155,6 @@ defmodule Que.Worker do
   @doc false
   defmacro __using__(opts \\ []) do
     quote bind_quoted: [opts: opts] do
-      @behaviour Que.Worker
       @after_compile __MODULE__
       @concurrency   opts[:concurrency] || 1
 
@@ -247,7 +246,7 @@ defmodule Que.Worker do
   @doc """
   Optional callback that is executed before the job is started.
   """
-  @callback on_setup(job :: term) :: term
+  @callback on_setup(arguments :: term) :: term
 
 
 
@@ -256,5 +255,5 @@ defmodule Que.Worker do
   Optional callback that is executed after the job finishes,
   both on success and failure.
   """
-  @callback on_teardown(job :: term) :: term
+  @callback on_teardown(arguments :: term) :: term
 end

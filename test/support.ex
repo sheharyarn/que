@@ -51,7 +51,7 @@ defmodule Que.Test.Meta do
       Logger.debug("#{__MODULE__} - perform: #{inspect(args)}")
     end
 
-    def on_success(args), do: Logger.debug("#{__MODULE__} - success: #{inspect(args)}")
+    def on_success(args),       do: Logger.debug("#{__MODULE__} - success: #{inspect(args)}")
     def on_failure(args, _err), do: Logger.debug("#{__MODULE__} - failure: #{inspect(args)}")
   end
 
@@ -59,9 +59,9 @@ defmodule Que.Test.Meta do
   defmodule SetupAndTeardownWorker do
     use Que.Worker
 
-    def perform(args), do: Logger.debug("#{__MODULE__} - perform: #{inspect(args)}")
-    def on_setup(job), do: Logger.debug("#{__MODULE__} - on_setup: #{inspect(job)}")
-    def on_teardown(job), do: Logger.debug("#{__MODULE__} - on_teardown: #{inspect(job)}")
+    def perform(args),     do: Logger.debug("#{__MODULE__} - perform: #{inspect(args)}")
+    def on_setup(args),    do: Logger.debug("#{__MODULE__} - on_setup: #{inspect(args)}")
+    def on_teardown(args), do: Logger.debug("#{__MODULE__} - on_teardown: #{inspect(args)}")
   end
 
 
