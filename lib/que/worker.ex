@@ -62,7 +62,6 @@ defmodule Que.Worker do
 
 
 
-
   ## Handle Job Success & Failure
 
   The worker can also export optional `on_success/1` and `on_failure/2`
@@ -83,6 +82,33 @@ defmodule Que.Worker do
     def on_failure({campaign, user}, error) do
       CampaignReport.compile(campaign, status: :failed, user: user)
       Logger.debug("Campaign email to \#{user.id} failed: \#{inspect(error)}")
+    end
+  end
+  ```
+
+
+
+  ## Setup and Teardown
+
+  You can similarly export optional `on_setup/1` and `on_teardown/1` callbacks
+  that are respectively run before and after the job is performed (successfully
+  or not).
+
+  ```
+  defmodule MyApp.Workers.VideoProcessor do
+    use Que.Worker
+
+    def on_setup({user, _video, _options}) do
+      User.notify(user, "Your video is processing, check back later.")
+    end
+
+    def perform({_user, video, options}) do
+      FFMPEG.process(video.path, options)
+    end
+
+    def on_teardown({user, video, _options}) do
+      link = MyApp.Router.video_path(user.id, video.id)
+      User.notify(user, "We've finished processing your video. See the results.", link)
     end
   end
   ```

@@ -158,6 +158,33 @@ defmodule App.Workers.ReportBuilder do
 end
 ```
 
+
+### Setup and Teardown
+
+You can similarly export optional `on_setup/1` and `on_teardown/1` callbacks
+that are respectively run before and after the job is performed (successfully
+or not).
+
+```
+defmodule App.Workers.VideoProcessor do
+  use Que.Worker
+
+  def on_setup({user, _video, _options}) do
+    User.notify(user, "Your video is processing, check back later.")
+  end
+
+  def perform({_user, video, options}) do
+    FFMPEG.process(video.path, options)
+  end
+
+  def on_teardown({user, video, _options}) do
+    link = MyApp.Router.video_path(user.id, video.id)
+    User.notify(user, "We've finished processing your video. See the results.", link)
+  end
+end
+```
+
+
 Head over to Hexdocs for detailed [`Worker` documentation][docs-worker].
 
 <br>
