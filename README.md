@@ -27,7 +27,7 @@ Add `que` to your project dependencies in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:que, "~> 0.9.0"}]
+  [{:que, "~> 0.10.0"}]
 end
 ```
 
@@ -165,7 +165,7 @@ You can similarly export optional `on_setup/1` and `on_teardown/1` callbacks
 that are respectively run before and after the job is performed (successfully
 or not).
 
-```
+```elixir
 defmodule App.Workers.VideoProcessor do
   use Que.Worker
 
@@ -178,7 +178,7 @@ defmodule App.Workers.VideoProcessor do
   end
 
   def on_teardown({user, video, _options}) do
-    link = MyApp.Router.video_path(user.id, video.id)
+    link = Router.video_path(user.id, video.id)
     User.notify(user, "We've finished processing your video. See the results.", link)
   end
 end
