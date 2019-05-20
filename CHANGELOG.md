@@ -2,6 +2,12 @@ Changelog
 =========
 
 
+## Version 0.10.1
+
+ - [Enhancement] Pass job instead of job arguments in setup/teardown callbacks
+
+
+
 ## Version 0.10.0
 
  - [Enhancement] Add setup/teardown callbacks to workers
