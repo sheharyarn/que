@@ -60,8 +60,8 @@ defmodule Que.Test.Meta do
     use Que.Worker
 
     def perform(args),     do: Logger.debug("#{__MODULE__} - perform: #{inspect(args)}")
-    def on_setup(args),    do: Logger.debug("#{__MODULE__} - on_setup: #{inspect(args)}")
-    def on_teardown(args), do: Logger.debug("#{__MODULE__} - on_teardown: #{inspect(args)}")
+    def on_setup(job),     do: Logger.debug("#{__MODULE__} - on_setup: #{inspect(job)}")
+    def on_teardown(job),  do: Logger.debug("#{__MODULE__} - on_teardown: #{inspect(job)}")
   end
 
 

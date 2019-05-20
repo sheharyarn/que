@@ -81,8 +81,8 @@ defmodule Que.Test.Job do
     end)
 
     assert capture =~ ~r/Completed/
-    assert capture =~ ~r/on_setup: nil/
-    assert capture =~ ~r/on_teardown: nil/
+    assert capture =~ ~r/on_setup: %Que.Job/
+    assert capture =~ ~r/on_teardown: %Que.Job/
   end
 
 
@@ -102,8 +102,8 @@ defmodule Que.Test.Job do
     end)
 
     assert capture =~ ~r/Failed/
-    assert capture =~ ~r/on_setup: nil/
-    assert capture =~ ~r/on_teardown: nil/
+    assert capture =~ ~r/on_setup: %Que.Job/
+    assert capture =~ ~r/on_teardown: %Que.Job/
   end
 
 
