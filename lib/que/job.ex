@@ -1,4 +1,6 @@
 defmodule Que.Job do
+  require Logger
+
   defstruct  [:id, :arguments, :worker, :status, :ref, :pid, :created_at, :updated_at]
   ## Note: Update Que.Persistence.Mnesia after changing these values
 
@@ -59,6 +61,7 @@ defmodule Que.Job do
 
     {:ok, pid} =
       Que.Helpers.do_task(fn ->
+        Logger.metadata(job_id: job.id)
         job.worker.on_setup(job)
         job.worker.perform(job.arguments)
       end)
@@ -78,6 +81,7 @@ defmodule Que.Job do
     Que.Helpers.log("Completed #{job}")
 
     Que.Helpers.do_task(fn ->
+      Logger.metadata(job_id: job.id)
       job.worker.on_success(job.arguments)
       job.worker.on_teardown(job)
     end)
@@ -97,6 +101,7 @@ defmodule Que.Job do
     Que.Helpers.log("Failed #{job}")
 
     Que.Helpers.do_task(fn ->
+      Logger.metadata(job_id: job.id)
       job.worker.on_failure(job.arguments, error)
       job.worker.on_teardown(job)
     end)
