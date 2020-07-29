@@ -1,6 +1,9 @@
 Changelog
 =========
 
+## Version 0.10.2
+
+ - [Enhancement] Remove useless ex utils
 
 ## Version 0.10.1
 
