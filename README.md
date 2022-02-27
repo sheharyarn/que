@@ -4,6 +4,7 @@
 [![Build Status][shield-travis]][travis-ci]
 [![Coverage Status][shield-inch]][docs]
 [![Version][shield-version]][hexpm]
+[![Downloads][shield-downloads]][hexpm]
 [![License][shield-license]][hexpm]
 
 > Simple Background Job Processing in Elixir :zap:
