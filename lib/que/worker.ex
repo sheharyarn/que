@@ -136,7 +136,6 @@ defmodule Que.Worker do
 
 
 
-
   @doc """
   Checks if the specified module is a valid Que Worker
 
@@ -181,13 +180,27 @@ defmodule Que.Worker do
     end
   end
 
+  def __after_compile__(%{module: module}, _bytecode) do
+    # Raises error if the Worker doesn't export a perform/1 method
+    unless Module.defines?(module, {:perform, 1}) do
+      raise Que.Error.InvalidWorker,
+        "#{ExUtils.Module.name(module)} must export a perform/1 method"
+    end
 
+    concurrency = module.concurrency()
+
+    # Raise error if the concurrency option in invalid
+    unless concurrency == :infinity or (is_integer(concurrency) and concurrency > 0) do
+      raise Que.Error.InvalidWorker,
+        "#{ExUtils.Module.name(module)} has an invalid concurrency value"
+    end
+  end
 
 
   @doc false
   defmacro __using__(opts \\ []) do
     quote bind_quoted: [opts: opts] do
-      @after_compile __MODULE__
+      @after_compile Que.Worker
       @concurrency   opts[:concurrency] || 1
 
 
@@ -218,22 +231,6 @@ defmodule Que.Worker do
 
 
 
-      # Make sure the Worker is valid
-      def __after_compile__(_env, _bytecode) do
-
-        # Raises error if the Worker doesn't export a perform/1 method
-        unless Module.defines?(__MODULE__, {:perform, 1}) do
-          raise Que.Error.InvalidWorker,
-            "#{ExUtils.Module.name(__MODULE__)} must export a perform/1 method"
-        end
-
-
-        # Raise error if the concurrency option in invalid
-        unless @concurrency == :infinity or (is_integer(@concurrency) and @concurrency > 0) do
-          raise Que.Error.InvalidWorker,
-            "#{ExUtils.Module.name(__MODULE__)} has an invalid concurrency value"
-        end
-      end
 
     end
   end
