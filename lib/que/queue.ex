@@ -105,8 +105,10 @@ defmodule Que.Queue do
   @spec find(queue :: Que.Queue.t, key :: atom, value :: term) :: Que.Job.t | nil
   def find(queue, key \\ :id, value)
 
+  # job.ref is actually a Task. So, we need to access job.ref.ref to get
+  # the real reference of a job.
   def find(%Que.Queue{ running: running }, :ref, value) do
-    Enum.find(running, &(Map.get(&1, :ref) == value))
+    Enum.find(running, &(Map.get(&1, :ref) |> Map.get(:ref) == value))
   end
 
   def find(%Que.Queue{} = q, key, value) do

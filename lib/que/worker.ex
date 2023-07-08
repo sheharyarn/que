@@ -64,7 +64,7 @@ defmodule Que.Worker do
 
   ## Handle Job Success & Failure
 
-  The worker can also export optional `on_success/1` and `on_failure/2`
+  The worker can also export optional `on_success/2` and `on_failure/2`
   callbacks that handle appropriate cases.
 
   ```
@@ -75,11 +75,12 @@ defmodule Que.Worker do
       Mailer.send_campaign_email(campaign, user: user)
     end
 
-    def on_success({campaign, user}) do
+    def on_success({campaign, user} = job.args, result) do
       CampaignReport.compile(campaign, status: :success, user: user)
+      Logger.info("Campaign email returned: \#{result}")
     end
 
-    def on_failure({campaign, user}, error) do
+    def on_failure({campaign, user} = job.args, error) do
       CampaignReport.compile(campaign, status: :failed, user: user)
       Logger.debug("Campaign email to \#{user.id} failed: \#{inspect(error)}")
     end
@@ -198,11 +199,11 @@ defmodule Que.Worker do
 
       ## Default implementations of on_success and on_failure callbacks
 
-      def on_success(_arg) do
+      def on_success(_job, _result) do
       end
 
 
-      def on_failure(_arg, _err) do
+      def on_failure(_job, _err) do
       end
 
 
@@ -214,7 +215,7 @@ defmodule Que.Worker do
       end
 
 
-      defoverridable [on_success: 1, on_failure: 2, on_setup: 1, on_teardown: 1]
+      defoverridable [on_success: 2, on_failure: 2, on_setup: 1, on_teardown: 1]
 
 
 
@@ -261,7 +262,7 @@ defmodule Que.Worker do
   Optional callback that is executed when the job is processed
   successfully.
   """
-  @callback on_success(arguments :: term) :: term
+  @callback on_success(job :: Que.Job.t(), arguments :: term) :: term
 
 
 
@@ -270,7 +271,7 @@ defmodule Que.Worker do
   Optional callback that is executed if an error is raised during
   job is processed (in `perform` callback)
   """
-  @callback on_failure(arguments :: term, error :: tuple) :: term
+  @callback on_failure(job :: Que.Job.t(), error :: tuple) :: term
 
 
 

@@ -59,14 +59,15 @@ defmodule Que.Job do
   def perform(job) do
     Que.Helpers.log("Starting #{job}")
 
-    {:ok, pid} =
+    task =
       Que.Helpers.do_task(fn ->
         Logger.metadata(job_id: job.id)
         job.worker.on_setup(job)
         job.worker.perform(job.arguments)
       end)
 
-    %{ job | status: :started, pid: pid, ref: Process.monitor(pid) }
+    # Return task instead of task.ref so a job can be awaited during tests
+    %{job | status: :started, pid: task.pid, ref: task}
   end
 
 
@@ -76,17 +77,19 @@ defmodule Que.Job do
   Handles Job Success, Calls appropriate worker method and updates the job
   status to :completed
   """
-  @spec handle_success(job :: Que.Job.t) :: Que.Job.t
-  def handle_success(job) do
-    Que.Helpers.log("Completed #{job}")
+  @spec handle_success(job :: Que.Job.t(), result :: term()) :: Que.Job.t()
+  def handle_success(job, result) do
+    Que.Helpers.log("Completed #{job} with result #{inspect(result)}}")
+
+    job = %{job | status: :completed, pid: nil, ref: nil}
 
     Que.Helpers.do_task(fn ->
       Logger.metadata(job_id: job.id)
-      job.worker.on_success(job.arguments)
+      job.worker.on_success(job, result)
       job.worker.on_teardown(job)
     end)
 
-    %{ job | status: :completed, pid: nil, ref: nil }
+    job
   end
 
 
@@ -102,7 +105,7 @@ defmodule Que.Job do
 
     Que.Helpers.do_task(fn ->
       Logger.metadata(job_id: job.id)
-      job.worker.on_failure(job.arguments, error)
+      job.worker.on_failure(job, error)
       job.worker.on_teardown(job)
     end)
 
@@ -120,4 +123,3 @@ defimpl String.Chars, for: Que.Job do
     "Job # #{job.id} with #{ExUtils.Module.name(job.worker)}"
   end
 end
-
