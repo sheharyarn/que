@@ -71,7 +71,10 @@ defmodule Que.Test.Job do
         SetupAndTeardownWorker
         |> Job.new
         |> Job.perform
-        |> Job.handle_success
+
+      result = Task.await(job.ref)
+
+      job = job |> Job.handle_success(result)
 
       assert job.status == :completed
       assert job.pid    == nil
@@ -109,10 +112,12 @@ defmodule Que.Test.Job do
 
   test "#handle_success works as expected" do
     capture = Helpers.capture_log(fn ->
+      result = true
+
       job =
         SuccessWorker
         |> Job.new
-        |> Job.handle_success
+        |> Job.handle_success(result)
 
       assert job.status == :completed
       assert job.pid    == nil
@@ -122,7 +127,7 @@ defmodule Que.Test.Job do
     end)
 
     assert capture =~ ~r/Completed/
-    assert capture =~ ~r/success: nil/
+    assert capture =~ ~r/success/
   end
 
 
@@ -141,7 +146,7 @@ defmodule Que.Test.Job do
     end)
 
     assert capture =~ ~r/Failed/
-    assert capture =~ ~r/failure: nil/
+    assert capture =~ ~r/failure/
   end
 
 end

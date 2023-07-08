@@ -32,9 +32,9 @@ defmodule Que.Helpers do
   @doc """
   Off-loads tasks to custom `Que.TaskSupervisor`
   """
-  @spec do_task((() -> any)) :: {:ok, pid}
+  @spec do_task((() -> any)) :: Task.t()
   def do_task(fun) do
-    Task.Supervisor.start_child(Que.TaskSupervisor, fun)
+    Task.Supervisor.async_nolink(Que.TaskSupervisor, fun)
   end
 
 
