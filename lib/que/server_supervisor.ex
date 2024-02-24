@@ -1,5 +1,5 @@
 defmodule Que.ServerSupervisor do
-  use Supervisor
+  use DynamicSupervisor
 
   @module __MODULE__
 
@@ -15,10 +15,11 @@ defmodule Que.ServerSupervisor do
   @spec start_link(:ok) :: Supervisor.on_start()
   def start_link(_) do
     Que.Helpers.log("Booting Server Supervisor for Workers", :low)
-    pid = Supervisor.start_link(@module, :ok, name: @module)
+    pid = DynamicSupervisor.start_link(@module, :ok, name: @module)
 
     # Resume Pending Jobs
     resume_queued_jobs()
+
     pid
   end
 
@@ -28,7 +29,7 @@ defmodule Que.ServerSupervisor do
   @spec start_server(worker :: Que.Worker.t()) :: Supervisor.on_start_child() | no_return
   def start_server(worker) do
     Que.Worker.validate!(worker)
-    Supervisor.start_child(@module, [worker])
+    DynamicSupervisor.start_child(@module, {Que.Server, worker})
   end
 
   # If the server for the worker is running, add job to it.
@@ -44,11 +45,7 @@ defmodule Que.ServerSupervisor do
 
   @doc false
   def init(:ok) do
-    children = [
-      worker(Que.Server, [])
-    ]
-
-    supervise(children, strategy: :simple_one_for_one)
+    DynamicSupervisor.init(strategy: :one_for_one)
   end
 
   # Spawn all (valid) Workers with queued jobs
