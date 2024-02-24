@@ -1,6 +1,11 @@
 Changelog
 =========
 
+## Version 0.11.0
+
+- [Enhancement] Update to Erlang/OTP 26 and Elixir 1.16, remove deprecated warnings
+
+
 
 ## Version 0.10.1
 
