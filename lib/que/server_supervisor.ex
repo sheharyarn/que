@@ -9,14 +9,11 @@ defmodule Que.ServerSupervisor do
   you absolutely know what you're doing.
   """
 
-
-
-
   @doc """
   Starts the Supervision Tree
   """
-  @spec start_link() :: Supervisor.on_start
-  def start_link do
+  @spec start_link(:ok) :: Supervisor.on_start()
+  def start_link(_) do
     Que.Helpers.log("Booting Server Supervisor for Workers", :low)
     pid = Supervisor.start_link(@module, :ok, name: @module)
 
@@ -25,20 +22,14 @@ defmodule Que.ServerSupervisor do
     pid
   end
 
-
-
-
   @doc """
   Starts a `Que.Server` for the given worker
   """
-  @spec start_server(worker :: Que.Worker.t) :: Supervisor.on_start_child | no_return
+  @spec start_server(worker :: Que.Worker.t()) :: Supervisor.on_start_child() | no_return
   def start_server(worker) do
     Que.Worker.validate!(worker)
     Supervisor.start_child(@module, [worker])
   end
-
-
-
 
   # If the server for the worker is running, add job to it.
   # If not, spawn a new server first and then add it.
@@ -51,9 +42,6 @@ defmodule Que.ServerSupervisor do
     Que.Server.add(worker, args)
   end
 
-
-
-
   @doc false
   def init(:ok) do
     children = [
@@ -63,15 +51,12 @@ defmodule Que.ServerSupervisor do
     supervise(children, strategy: :simple_one_for_one)
   end
 
-
-
-
   # Spawn all (valid) Workers with queued jobs
   defp resume_queued_jobs do
     {valid, invalid} =
-      Que.Persistence.incomplete
-      |> Enum.map(&(&1.worker))
-      |> Enum.uniq
+      Que.Persistence.incomplete()
+      |> Enum.map(& &1.worker)
+      |> Enum.uniq()
       |> Enum.split_with(&Que.Worker.valid?/1)
 
     # Notify user about pending jobs for Invalid Workers
@@ -85,6 +70,4 @@ defmodule Que.ServerSupervisor do
       Enum.map(valid, &start_server/1)
     end
   end
-
 end
-
