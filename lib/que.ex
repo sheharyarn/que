@@ -17,7 +17,7 @@ defmodule Que do
 
   ```
   defp deps do
-    [{:que, "~> #{Que.Mixfile.project[:version]}"}]
+    [{:que, "~> #{Que.Mixfile.project()[:version]}"}]
   end
   ```
 
@@ -80,19 +80,13 @@ defmodule Que do
 
   """
 
-
-
-
   @doc """
   Starts the Que Application (and its Supervision Tree)
   """
   def start(_type, _args) do
     Que.Helpers.log("Booting Que", :low)
-    Que.Supervisor.start_link
+    Que.Supervisor.start_link()
   end
-
-
-
 
   @doc """
   Enqueues a Job to be processed by Que.
@@ -112,6 +106,4 @@ defmodule Que do
   """
   @spec add(worker :: module, arguments :: term) :: {:ok, %Que.Job{}}
   defdelegate add(worker, arguments), to: Que.ServerSupervisor
-
 end
-
