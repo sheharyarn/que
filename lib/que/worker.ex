@@ -160,7 +160,7 @@ defmodule Que.Worker do
   @spec valid?(module :: module) :: boolean
   def valid?(module) do
     try do
-      module.__que_worker__
+      module.__que_worker__()
     rescue
       UndefinedFunctionError -> false
     end
@@ -216,25 +216,22 @@ defmodule Que.Worker do
 
       defoverridable [on_success: 1, on_failure: 2, on_setup: 1, on_teardown: 1]
 
-
+      def validate_concurrency(:infinity), do: :ok
+      def validate_concurrency(value) when is_integer(value) and value > 0, do: :ok
+      def validate_concurrency(_),
+        do: raise(Que.Error.InvalidWorker,
+            "#{ExUtils.Module.name(__MODULE__)} has an invalid concurrency value")
 
       # Make sure the Worker is valid
       def __after_compile__(_env, _bytecode) do
-
         # Raises error if the Worker doesn't export a perform/1 method
-        unless Module.defines?(__MODULE__, {:perform, 1}) do
+        if not Module.defines?(__MODULE__, {:perform, 1}) do
           raise Que.Error.InvalidWorker,
             "#{ExUtils.Module.name(__MODULE__)} must export a perform/1 method"
         end
 
-
-        # Raise error if the concurrency option in invalid
-        unless @concurrency == :infinity or (is_integer(@concurrency) and @concurrency > 0) do
-          raise Que.Error.InvalidWorker,
-            "#{ExUtils.Module.name(__MODULE__)} has an invalid concurrency value"
-        end
+        validate_concurrency(@concurrency)
       end
-
     end
   end
 

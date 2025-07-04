@@ -17,6 +17,19 @@ defmodule Que.Server do
 
 
   @doc """
+  Child spec for DynamicSupervisor compatibility
+  """
+  def child_spec(worker) do
+    %{
+      id: {__MODULE__, worker},
+      start: {__MODULE__, :start_link, [worker]},
+      restart: :permanent,
+      shutdown: 5000,
+      type: :worker
+    }
+  end
+
+  @doc """
   Starts the Job Server
   """
   @spec start_link(worker :: Que.Worker.t) :: GenServer.on_start
@@ -156,4 +169,3 @@ defmodule Que.Server do
   end
 
 end
-

@@ -5,7 +5,7 @@ defmodule Que.Helpers do
   @moduledoc false
 
   @log_levels [low: 0, medium: 1, high: 2]
-  @min_level Application.get_env(:que, :log_level, :low)
+  @min_level Application.compile_env(:que, :log_level, :low)
 
 
   ## Helper Module for `Que`. Exports methods that are used in the
@@ -43,5 +43,4 @@ defmodule Que.Helpers do
   defp level_value(level) when is_atom(level) do
     @log_levels[level] || 0
   end
-
 end
