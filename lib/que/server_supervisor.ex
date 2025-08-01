@@ -1,5 +1,5 @@
 defmodule Que.ServerSupervisor do
-  use Supervisor
+  use DynamicSupervisor
 
   @module __MODULE__
 
@@ -9,36 +9,28 @@ defmodule Que.ServerSupervisor do
   you absolutely know what you're doing.
   """
 
-
-
-
   @doc """
   Starts the Supervision Tree
   """
-  @spec start_link() :: Supervisor.on_start
-  def start_link do
+  @spec start_link(:ok) :: Supervisor.on_start()
+  def start_link(_) do
     Que.Helpers.log("Booting Server Supervisor for Workers", :low)
-    pid = Supervisor.start_link(@module, :ok, name: @module)
+    pid = DynamicSupervisor.start_link(@module, :ok, name: @module)
 
     # Resume Pending Jobs
     resume_queued_jobs()
+
     pid
   end
-
-
-
 
   @doc """
   Starts a `Que.Server` for the given worker
   """
-  @spec start_server(worker :: Que.Worker.t) :: Supervisor.on_start_child | no_return
+  @spec start_server(worker :: Que.Worker.t()) :: Supervisor.on_start_child() | no_return
   def start_server(worker) do
     Que.Worker.validate!(worker)
-    Supervisor.start_child(@module, [worker])
+    DynamicSupervisor.start_child(@module, {Que.Server, worker})
   end
-
-
-
 
   # If the server for the worker is running, add job to it.
   # If not, spawn a new server first and then add it.
@@ -51,27 +43,17 @@ defmodule Que.ServerSupervisor do
     Que.Server.add(worker, args)
   end
 
-
-
-
   @doc false
   def init(:ok) do
-    children = [
-      worker(Que.Server, [])
-    ]
-
-    supervise(children, strategy: :simple_one_for_one)
+    DynamicSupervisor.init(strategy: :one_for_one)
   end
-
-
-
 
   # Spawn all (valid) Workers with queued jobs
   defp resume_queued_jobs do
     {valid, invalid} =
-      Que.Persistence.incomplete
-      |> Enum.map(&(&1.worker))
-      |> Enum.uniq
+      Que.Persistence.incomplete()
+      |> Enum.map(& &1.worker)
+      |> Enum.uniq()
       |> Enum.split_with(&Que.Worker.valid?/1)
 
     # Notify user about pending jobs for Invalid Workers
@@ -85,6 +67,4 @@ defmodule Que.ServerSupervisor do
       Enum.map(valid, &start_server/1)
     end
   end
-
 end
-
