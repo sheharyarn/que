@@ -35,12 +35,22 @@ defmodule Que.ServerSupervisor do
   # If the server for the worker is running, add job to it.
   # If not, spawn a new server first and then add it.
   @doc false
-  def add(worker, args) do
+  def add(worker, args, opts \\ []) do
     unless Que.Server.exists?(worker) do
       start_server(worker)
     end
 
-    Que.Server.add(worker, args)
+    Que.Server.add(worker, args, opts)
+  end
+
+  # Similar to add/2 but for scheduled jobs
+  @doc false
+  def add_scheduled(worker, args, scheduled_at, opts \\ []) do
+    unless Que.Server.exists?(worker) do
+      start_server(worker)
+    end
+
+    Que.Server.add_scheduled(worker, args, scheduled_at, opts)
   end
 
   @doc false
