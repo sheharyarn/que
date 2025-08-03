@@ -161,6 +161,36 @@ defmodule Que.Persistence.Mnesia do
   defdelegate failed(worker),     to: @store,   as: :failed_jobs
 
   @doc false
+  defdelegate ready_scheduled,    to: @store,   as: :ready_scheduled_jobs
+
+  @doc false
+  defdelegate ready_scheduled(worker), to: @store, as: :ready_scheduled_jobs
+
+  @doc false
+  defdelegate cancelled,          to: @store,   as: :cancelled_jobs
+
+  @doc false
+  defdelegate cancelled(worker),  to: @store,   as: :cancelled_jobs
+
+  @doc false
+  defdelegate cancellable,        to: @store,   as: :cancellable_jobs
+
+  @doc false
+  defdelegate cancellable(worker), to: @store,  as: :cancellable_jobs
+
+  @doc false
+  defdelegate retrying,           to: @store,   as: :retrying_jobs
+
+  @doc false
+  defdelegate retrying(worker),   to: @store,   as: :retrying_jobs
+
+  @doc false
+  defdelegate timeout,            to: @store,   as: :timeout_jobs
+
+  @doc false
+  defdelegate timeout(worker),    to: @store,   as: :timeout_jobs
+
+  @doc false
   defdelegate find(job),          to: @store,   as: :find_job
 
   @doc false

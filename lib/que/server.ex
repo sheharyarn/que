@@ -49,8 +49,16 @@ defmodule Que.Server do
   # arguments. Use Que.add instead of directly calling this
 
   @doc false
-  def add(worker, arg) do
-    GenServer.call(via_worker(worker), {:add_job, worker, arg})
+  def add(worker, arg, opts \\ []) do
+    GenServer.call(via_worker(worker), {:add_job, worker, arg, opts})
+  end
+
+  # Validates worker and creates a new scheduled job with the passed
+  # arguments. Use Que.add_scheduled instead of directly calling this
+
+  @doc false
+  def add_scheduled(worker, arg, scheduled_at, opts \\ []) do
+    GenServer.call(via_worker(worker), {:add_scheduled_job, worker, arg, scheduled_at, opts})
   end
 
 
@@ -77,12 +85,12 @@ defmodule Que.Server do
   # Pushes a new Job to the queue and processes it
 
   @doc false
-  def handle_call({:add_job, worker, args}, _from, queue) do
+  def handle_call({:add_job, worker, args, opts}, _from, queue) do
     Que.Helpers.log("Queued new Job for #{ExUtils.Module.name(worker)}")
 
     job =
       worker
-      |> Que.Job.new(args)
+      |> Que.Job.new(args, opts)
       |> Que.Persistence.insert
 
     queue =
@@ -91,6 +99,37 @@ defmodule Que.Server do
       |> Que.Queue.process
 
     {:reply, {:ok, job}, queue}
+  end
+
+  # Backward compatibility - handle old API without opts
+  @doc false
+  def handle_call({:add_job, worker, args}, from, queue) do
+    handle_call({:add_job, worker, args, []}, from, queue)
+  end
+
+  # Pushes a new scheduled Job to the queue
+
+  @doc false
+  def handle_call({:add_scheduled_job, worker, args, scheduled_at, opts}, _from, queue) do
+    Que.Helpers.log("Scheduled new Job for #{ExUtils.Module.name(worker)} at #{scheduled_at}")
+
+    job =
+      worker
+      |> Que.Job.new_scheduled(args, scheduled_at, opts)
+      |> Que.Persistence.insert
+
+    queue =
+      queue
+      |> Que.Queue.put(job)
+      |> Que.Queue.process
+
+    {:reply, {:ok, job}, queue}
+  end
+
+  # Backward compatibility - handle old API without opts
+  @doc false
+  def handle_call({:add_scheduled_job, worker, args, scheduled_at}, from, queue) do
+    handle_call({:add_scheduled_job, worker, args, scheduled_at, []}, from, queue)
   end
 
 
@@ -134,6 +173,30 @@ defmodule Que.Server do
       |> Que.Queue.process
 
     {:noreply, queue}
+  end
+
+  # Job timeout - Kill job and handle timeout
+
+  @doc false
+  def handle_info({:job_timeout, job_id}, queue) do
+    job = Que.Queue.find(queue, :id, job_id)
+    
+    if job && job.status == :started do
+      job =
+        job
+        |> Que.Job.handle_timeout()
+        |> Que.Persistence.update
+
+      queue =
+        queue
+        |> Que.Queue.remove(job)
+        |> Que.Queue.process
+
+      {:noreply, queue}
+    else
+      # Job already completed or not found, ignore timeout
+      {:noreply, queue}
+    end
   end
 
 

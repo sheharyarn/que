@@ -136,6 +136,78 @@ defmodule Que.Persistence do
   defdelegate failed(worker), to: @adapter
 
 
+  @doc """
+  Returns scheduled `Que.Job`s that are ready to be executed.
+  """
+  @callback ready_scheduled :: list(Que.Job.t)
+  defdelegate ready_scheduled, to: @adapter
+
+
+  @doc """
+  Returns scheduled `Que.Job`s for the given worker that are ready to be executed.
+  """
+  @callback ready_scheduled(worker :: Que.Worker.t) :: list(Que.Job.t)
+  defdelegate ready_scheduled(worker), to: @adapter
+
+
+  @doc """
+  Returns cancelled `Que.Job`s from the database.
+  """
+  @callback cancelled :: list(Que.Job.t)
+  defdelegate cancelled, to: @adapter
+
+
+  @doc """
+  Returns cancelled `Que.Job`s for the given worker.
+  """
+  @callback cancelled(worker :: Que.Worker.t) :: list(Que.Job.t)
+  defdelegate cancelled(worker), to: @adapter
+
+
+  @doc """
+  Returns cancellable `Que.Job`s from the database.
+
+  This includes all Jobs whose status is either `:scheduled` or `:queued`.
+  """
+  @callback cancellable :: list(Que.Job.t)
+  defdelegate cancellable, to: @adapter
+
+
+  @doc """
+  Returns cancellable `Que.Job`s for the given worker.
+  """
+  @callback cancellable(worker :: Que.Worker.t) :: list(Que.Job.t)
+  defdelegate cancellable(worker), to: @adapter
+
+
+  @doc """
+  Returns retrying `Que.Job`s from the database.
+  """
+  @callback retrying :: list(Que.Job.t)
+  defdelegate retrying, to: @adapter
+
+
+  @doc """
+  Returns retrying `Que.Job`s for the given worker.
+  """
+  @callback retrying(worker :: Que.Worker.t) :: list(Que.Job.t)
+  defdelegate retrying(worker), to: @adapter
+
+
+  @doc """
+  Returns timeout `Que.Job`s from the database.
+  """
+  @callback timeout :: list(Que.Job.t)
+  defdelegate timeout, to: @adapter
+
+
+  @doc """
+  Returns timeout `Que.Job`s for the given worker.
+  """
+  @callback timeout(worker :: Que.Worker.t) :: list(Que.Job.t)
+  defdelegate timeout(worker), to: @adapter
+
+
 
 
   @doc """

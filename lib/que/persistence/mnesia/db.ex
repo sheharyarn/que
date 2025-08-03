@@ -14,8 +14,8 @@ defmodule Que.Persistence.Mnesia.DB do
 
   defmodule Jobs do
     use Memento.Table,
-      attributes: [:id, :arguments, :worker, :status, :ref, :pid, :created_at, :updated_at],
-      index: [:worker, :status],
+      attributes: [:id, :arguments, :worker, :status, :ref, :pid, :created_at, :updated_at, :scheduled_at, :retry_count, :max_retries, :last_error, :timeout, :timeout_ref, :priority],
+      index: [:worker, :status, :priority],
       type: :ordered_set,
       autoincrement: true
 
@@ -71,7 +71,10 @@ defmodule Que.Persistence.Mnesia.DB do
       run_query(
         {:or,
           {:==, :status, :queued},
-          {:==, :status, :started}
+          {:or,
+            {:==, :status, :started},
+            {:==, :status, :scheduled}
+          }
         }
       )
     end
@@ -85,7 +88,37 @@ defmodule Que.Persistence.Mnesia.DB do
           {:==, :worker, name},
           {:or,
             {:==, :status, :queued},
-            {:==, :status, :started}
+            {:or,
+              {:==, :status, :started},
+              {:==, :status, :scheduled}
+            }
+          }
+        }
+      )
+    end
+
+
+    @doc "Find ready scheduled Jobs"
+    def ready_scheduled_jobs do
+      current_time = NaiveDateTime.utc_now()
+      run_query(
+        {:and,
+          {:==, :status, :scheduled},
+          {:=<, :scheduled_at, current_time}
+        }
+      )
+    end
+
+
+    @doc "Find ready scheduled Jobs for worker"
+    def ready_scheduled_jobs(name) do
+      current_time = NaiveDateTime.utc_now()
+      run_query(
+        {:and,
+          {:==, :worker, name},
+          {:and,
+            {:==, :status, :scheduled},
+            {:=<, :scheduled_at, current_time}
           }
         }
       )
@@ -108,6 +141,88 @@ defmodule Que.Persistence.Mnesia.DB do
         {:and,
           {:==, :worker, name},
           {:==, :status, :failed}
+        }
+      )
+    end
+
+
+    @doc "Find Cancelled Jobs"
+    def cancelled_jobs do
+      run_query(
+        {:==, :status, :cancelled}
+      )
+    end
+
+
+    @doc "Find Cancelled Jobs for worker"
+    def cancelled_jobs(name) do
+      run_query(
+        {:and,
+          {:==, :worker, name},
+          {:==, :status, :cancelled}
+        }
+      )
+    end
+
+
+    @doc "Find Cancellable Jobs (scheduled or queued)"
+    def cancellable_jobs do
+      run_query(
+        {:or,
+          {:==, :status, :scheduled},
+          {:==, :status, :queued}
+        }
+      )
+    end
+
+
+    @doc "Find Cancellable Jobs for worker"
+    def cancellable_jobs(name) do
+      run_query(
+        {:and,
+          {:==, :worker, name},
+          {:or,
+            {:==, :status, :scheduled},
+            {:==, :status, :queued}
+          }
+        }
+      )
+    end
+
+
+    @doc "Find Retrying Jobs"
+    def retrying_jobs do
+      run_query(
+        {:==, :status, :retrying}
+      )
+    end
+
+
+    @doc "Find Retrying Jobs for worker"
+    def retrying_jobs(name) do
+      run_query(
+        {:and,
+          {:==, :worker, name},
+          {:==, :status, :retrying}
+        }
+      )
+    end
+
+
+    @doc "Find Timeout Jobs"
+    def timeout_jobs do
+      run_query(
+        {:==, :status, :timeout}
+      )
+    end
+
+
+    @doc "Find Timeout Jobs for worker"
+    def timeout_jobs(name) do
+      run_query(
+        {:and,
+          {:==, :worker, name},
+          {:==, :status, :timeout}
         }
       )
     end

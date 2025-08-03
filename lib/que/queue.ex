@@ -43,6 +43,9 @@ defmodule Que.Queue do
   def process(%Que.Queue{running: running, worker: worker} = q) do
     Que.Worker.validate!(worker)
 
+    # First, promote any ready scheduled jobs to queued
+    q = promote_ready_scheduled_jobs(q)
+
     if (length(running) < worker.concurrency) do
       case fetch(q) do
         {q, nil} ->
@@ -66,16 +69,21 @@ defmodule Que.Queue do
 
 
   @doc """
-  Adds one or more Jobs to the `queued` list
+  Adds one or more Jobs to the `queued` list, maintaining priority order
   """
   @spec put(queue :: Que.Queue.t, jobs :: Que.Job.t | list(Que.Job.t)) :: Que.Queue.t
   def put(%Que.Queue{queued: queued} = q, jobs) when is_list(jobs) do
-    jobs = :queue.from_list(jobs)
-    %{ q | queued: :queue.join(queued, jobs) }
+    existing_jobs = :queue.to_list(queued)
+    all_jobs = existing_jobs ++ jobs
+    sorted_jobs = Enum.sort_by(all_jobs, & &1.priority, :desc)
+    %{ q | queued: :queue.from_list(sorted_jobs) }
   end
 
   def put(%Que.Queue{queued: queued} = q, job) do
-    %{ q | queued: :queue.in(job, queued) }
+    existing_jobs = :queue.to_list(queued)
+    all_jobs = existing_jobs ++ [job]
+    sorted_jobs = Enum.sort_by(all_jobs, & &1.priority, :desc)
+    %{ q | queued: :queue.from_list(sorted_jobs) }
   end
 
 
@@ -83,12 +91,19 @@ defmodule Que.Queue do
 
   @doc """
   Fetches the next Job in queue and returns a queue and Job tuple
+  Skips cancelled jobs automatically
   """
   @spec fetch(queue :: Que.Queue.t) :: { Que.Queue.t, Que.Job.t | nil }
   def fetch(%Que.Queue{queued: queue} = q) do
     case :queue.out(queue) do
-      {{:value, job}, rest} -> { %{ q | queued: rest }, job }
-      {:empty, _} -> { q, nil }
+      {{:value, %Que.Job{status: :cancelled} = job}, rest} -> 
+        # Skip cancelled jobs and update the database
+        Que.Persistence.update(job)
+        fetch(%{ q | queued: rest })
+      {{:value, job}, rest} -> 
+        { %{ q | queued: rest }, job }
+      {:empty, _} -> 
+        { q, nil }
     end
   end
 
@@ -180,6 +195,21 @@ defmodule Que.Queue do
   @spec running(queue :: Que.Queue.t) :: list(Que.Job.t)
   def running(%Que.Queue{running: running}) do
     running
+  end
+
+
+  @doc """
+  Promotes ready scheduled jobs to queued status and adds them to the queue
+  """
+  @spec promote_ready_scheduled_jobs(queue :: Que.Queue.t) :: Que.Queue.t
+  defp promote_ready_scheduled_jobs(%Que.Queue{worker: worker} = q) do
+    ready_jobs = 
+      worker
+      |> Que.Persistence.ready_scheduled()
+      |> Enum.map(&Que.Job.promote_if_ready/1)
+      |> Enum.map(&Que.Persistence.update/1)
+
+    put(q, ready_jobs)
   end
 
 end
