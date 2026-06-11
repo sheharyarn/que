@@ -1,6 +1,15 @@
 Changelog
 =========
 
+
+## Version 0.12.0
+
+- [Chore] Update to the latest Memento version
+- [Chore] Update to Elixir 1.19 & OTP 28, remove deprecated warnings
+- [Chore] Change minimum support Elixir version to 1.16
+
+
+
 ## Version 0.11.0
 
 - [Enhancement] Update to Erlang/OTP 26 and Elixir 1.16, remove deprecated warnings
