@@ -19,7 +19,7 @@ defmodule Que.Mixfile do
       # Project
       app: @app,
       version: @version,
-      elixir: "~> 1.4",
+      elixir: "~> 1.16",
       description: description(),
       package: package(),
       deps: deps(),
