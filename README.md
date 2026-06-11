@@ -32,14 +32,6 @@ def deps do
 end
 ```
 
-and then add it to your list of `applications`:
-
-```elixir
-def application do
-  [applications: [:que]]
-end
-```
-
 
 ### Mnesia Setup
 
@@ -48,7 +40,7 @@ To persist jobs across application restarts, specify the DB path in
 your `config.exs`:
 
 ```elixir
-config :mnesia, dir: 'mnesia/#{Mix.env}/#{node()}'        # Notice the single quotes
+config :mnesia, dir: ~c"mnesia/#{Mix.env()}/#{node()}"   # Use the ~c"" sigil
 ```
 
 And run the following mix task:
