@@ -1,10 +1,8 @@
 ## Namespace all test related modules under Que.Test.Meta
 ## ======================================================
 
-
 defmodule Que.Test.Meta do
   require Logger
-
 
   # Test workers for handling Jobs
   # ==============================
@@ -15,21 +13,18 @@ defmodule Que.Test.Meta do
     def perform(args), do: Logger.debug("#{__MODULE__} - perform: #{inspect(args)}")
   end
 
-
   defmodule ConcurrentWorker do
     use Que.Worker, concurrency: 4
 
     def perform(args), do: Logger.debug("#{__MODULE__} - perform: #{inspect(args)}")
   end
 
-
   defmodule SuccessWorker do
     use Que.Worker
 
-    def perform(args),    do: Logger.debug("#{__MODULE__} - perform: #{inspect(args)}")
+    def perform(args), do: Logger.debug("#{__MODULE__} - perform: #{inspect(args)}")
     def on_success(args), do: Logger.debug("#{__MODULE__} - success: #{inspect(args)}")
   end
-
 
   defmodule FailureWorker do
     use Que.Worker
@@ -42,7 +37,6 @@ defmodule Que.Test.Meta do
     def on_failure(args, _err), do: Logger.debug("#{__MODULE__} - failure: #{inspect(args)}")
   end
 
-
   defmodule SleepWorker do
     use Que.Worker
 
@@ -51,27 +45,22 @@ defmodule Que.Test.Meta do
       Logger.debug("#{__MODULE__} - perform: #{inspect(args)}")
     end
 
-    def on_success(args),       do: Logger.debug("#{__MODULE__} - success: #{inspect(args)}")
+    def on_success(args), do: Logger.debug("#{__MODULE__} - success: #{inspect(args)}")
     def on_failure(args, _err), do: Logger.debug("#{__MODULE__} - failure: #{inspect(args)}")
   end
-
 
   defmodule SetupAndTeardownWorker do
     use Que.Worker
 
-    def perform(args),     do: Logger.debug("#{__MODULE__} - perform: #{inspect(args)}")
-    def on_setup(job),     do: Logger.debug("#{__MODULE__} - on_setup: #{inspect(job)}")
-    def on_teardown(job),  do: Logger.debug("#{__MODULE__} - on_teardown: #{inspect(job)}")
+    def perform(args), do: Logger.debug("#{__MODULE__} - perform: #{inspect(args)}")
+    def on_setup(job), do: Logger.debug("#{__MODULE__} - on_setup: #{inspect(job)}")
+    def on_teardown(job), do: Logger.debug("#{__MODULE__} - on_teardown: #{inspect(job)}")
   end
-
-
-
 
   # Helper Module for Tests
   # =======================
 
   defmodule Helpers do
-
     # Sleeps for 2ms
     def wait(ms \\ 3) do
       :timer.sleep(ms)
@@ -100,23 +89,19 @@ defmodule Que.Test.Meta do
     # Captures everything
     def capture_all(fun) do
       capture_io(fn ->
-        IO.puts capture_log(fn -> fun |> capture_io |> IO.puts end)
+        IO.puts(capture_log(fn -> fun |> capture_io |> IO.puts() end))
       end)
     end
-
   end
-
-
 
   # App-specific helpers
   # ====================
 
   defmodule Helpers.App do
-
     # Restarts app and resets DB
     def reset do
       stop()
-      Helpers.Mnesia.reset
+      Helpers.Mnesia.reset()
       start()
       :ok
     end
@@ -132,13 +117,10 @@ defmodule Que.Test.Meta do
     end
   end
 
-
-
   # Mnesia-specific helpers
   # =======================
 
   defmodule Helpers.Mnesia do
-
     # Cleans up Mnesia DB
     def reset do
       Memento.Table.delete(Que.Persistence.Mnesia.DB.Jobs)
@@ -149,9 +131,9 @@ defmodule Que.Test.Meta do
     # Deletes the Mnesia DB from disk and creates a fresh one in memory
     def reset! do
       Helpers.capture_log(fn ->
-        Memento.stop
-        File.rm_rf!(Que.Persistence.Mnesia.__config__[:path])
-        Memento.start
+        Memento.stop()
+        File.rm_rf!(Que.Persistence.Mnesia.__config__()[:path])
+        Memento.start()
 
         reset()
       end)
@@ -160,14 +142,14 @@ defmodule Que.Test.Meta do
     # Creates sample Mnesia jobs
     def create_sample_jobs do
       [
-        %Que.Job{id: 1, status: :completed, worker: TestWorker    },
-        %Que.Job{id: 2, status: :completed, worker: SuccessWorker },
-        %Que.Job{id: 3, status: :failed,    worker: FailureWorker },
-        %Que.Job{id: 4, status: :started,   worker: TestWorker    },
-        %Que.Job{id: 5, status: :queued,    worker: SuccessWorker },
-        %Que.Job{id: 6, status: :queued,    worker: FailureWorker }
-      ] |> Enum.map(&Que.Persistence.Mnesia.insert/1)
+        %Que.Job{id: 1, status: :completed, worker: TestWorker},
+        %Que.Job{id: 2, status: :completed, worker: SuccessWorker},
+        %Que.Job{id: 3, status: :failed, worker: FailureWorker},
+        %Que.Job{id: 4, status: :started, worker: TestWorker},
+        %Que.Job{id: 5, status: :queued, worker: SuccessWorker},
+        %Que.Job{id: 6, status: :queued, worker: FailureWorker}
+      ]
+      |> Enum.map(&Que.Persistence.Mnesia.insert/1)
     end
   end
-
 end

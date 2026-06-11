@@ -48,12 +48,8 @@ defmodule Mix.Tasks.Que.Setup do
 
   """
 
-
-
-
   @doc false
   def run(_) do
-    Que.Persistence.Mnesia.setup!
+    Que.Persistence.Mnesia.setup!()
   end
-
 end

@@ -129,12 +129,8 @@ defmodule Que.Worker do
   To get a list of all failed jobs, you can call `Que.Persistence.failed/0`.
   """
 
-
-
   @typedoc "A valid worker module"
-  @type    t :: module
-
-
+  @type t :: module
 
   @doc """
   Checks if the specified module is a valid Que Worker
@@ -165,9 +161,6 @@ defmodule Que.Worker do
     end
   end
 
-
-
-
   @doc """
   Raises an error if the passed module is not a valid `Que.Worker`
   """
@@ -184,7 +177,7 @@ defmodule Que.Worker do
     # Raises error if the Worker doesn't export a perform/1 method
     unless Module.defines?(module, {:perform, 1}) do
       raise Que.Error.InvalidWorker,
-        "#{ExUtils.Module.name(module)} must export a perform/1 method"
+            "#{ExUtils.Module.name(module)} must export a perform/1 method"
     end
 
     concurrency = module.concurrency()
@@ -192,51 +185,36 @@ defmodule Que.Worker do
     # Raise error if the concurrency option in invalid
     unless concurrency == :infinity or (is_integer(concurrency) and concurrency > 0) do
       raise Que.Error.InvalidWorker,
-        "#{ExUtils.Module.name(module)} has an invalid concurrency value"
+            "#{ExUtils.Module.name(module)} has an invalid concurrency value"
     end
   end
-
 
   @doc false
   defmacro __using__(opts \\ []) do
     quote bind_quoted: [opts: opts] do
       @after_compile Que.Worker
-      @concurrency   opts[:concurrency] || 1
+      @concurrency opts[:concurrency] || 1
 
-
-      def concurrency,    do: @concurrency
+      def concurrency, do: @concurrency
       def __que_worker__, do: true
-
-
 
       ## Default implementations of on_success and on_failure callbacks
 
       def on_success(_arg) do
       end
 
-
       def on_failure(_arg, _err) do
       end
-
 
       def on_setup(_job) do
       end
 
-
       def on_teardown(_job) do
       end
 
-
-      defoverridable [on_success: 1, on_failure: 2, on_setup: 1, on_teardown: 1, concurrency: 0]
-
-
-
-
+      defoverridable on_success: 1, on_failure: 2, on_setup: 1, on_teardown: 1, concurrency: 0
     end
   end
-
-
-
 
   @doc """
   Main callback that processes the Job.
@@ -251,17 +229,11 @@ defmodule Que.Worker do
   """
   @callback perform(arguments :: term) :: term
 
-
-
-
   @doc """
   Optional callback that is executed when the job is processed
   successfully.
   """
   @callback on_success(arguments :: term) :: term
-
-
-
 
   @doc """
   Optional callback that is executed if an error is raised during
@@ -269,20 +241,14 @@ defmodule Que.Worker do
   """
   @callback on_failure(arguments :: term, error :: tuple) :: term
 
-
-
-
   @doc """
   Optional callback that is executed before the job is started.
   """
-  @callback on_setup(job :: Que.Job.t) :: term
-
-
-
+  @callback on_setup(job :: Que.Job.t()) :: term
 
   @doc """
   Optional callback that is executed after the job finishes,
   both on success and failure.
   """
-  @callback on_teardown(job :: Que.Job.t) :: term
+  @callback on_teardown(job :: Que.Job.t()) :: term
 end

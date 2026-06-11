@@ -1,7 +1,6 @@
 defmodule Que.Persistence.Mnesia do
   use Que.Persistence
 
-
   @moduledoc """
   Mnesia adapter to persist `Que.Job`s
 
@@ -39,14 +38,9 @@ defmodule Que.Persistence.Mnesia do
   and Tables.
   """
 
-
-
   @config [db: DB, table: Jobs]
-  @db     Module.concat(__MODULE__, @config[:db])
-  @store  Module.concat(@db, @config[:table])
-
-
-
+  @db Module.concat(__MODULE__, @config[:db])
+  @store Module.concat(@db, @config[:table])
 
   @doc """
   Creates the Mnesia Database for `Que` on disk
@@ -95,9 +89,9 @@ defmodule Que.Persistence.Mnesia do
     end
 
     # Create the Schema
-    Memento.stop
+    Memento.stop()
     Memento.Schema.create(nodes)
-    Memento.start
+    Memento.start()
 
     # Create the DB with Disk Copies
     # TODO:
@@ -107,26 +101,18 @@ defmodule Que.Persistence.Mnesia do
     Memento.Table.create!(@store, disc_copies: nodes)
   end
 
-
-
-
   @doc "Returns the Mnesia configuration for Que"
-  @spec __config__ :: Keyword.t
+  @spec __config__ :: Keyword.t()
   def __config__ do
     [
       database: @db,
-      table:    @store,
-      path:     Path.expand(Application.get_env(:mnesia, :dir))
+      table: @store,
+      path: Path.expand(Application.get_env(:mnesia, :dir))
     ]
   end
 
-
-
-
-
   # Callbacks in Table Definition
   # -----------------------------
-
 
   # Make sures that the DB exists (either
   # in memory or on disk)
@@ -135,41 +121,39 @@ defmodule Que.Persistence.Mnesia do
     Memento.Table.create(@store)
   end
 
+  @doc false
+  defdelegate all, to: @store, as: :all_jobs
 
   @doc false
-  defdelegate all,                to: @store,   as: :all_jobs
+  defdelegate all(worker), to: @store, as: :all_jobs
 
   @doc false
-  defdelegate all(worker),        to: @store,   as: :all_jobs
+  defdelegate completed, to: @store, as: :completed_jobs
 
   @doc false
-  defdelegate completed,          to: @store,   as: :completed_jobs
+  defdelegate completed(worker), to: @store, as: :completed_jobs
 
   @doc false
-  defdelegate completed(worker),  to: @store,   as: :completed_jobs
+  defdelegate incomplete, to: @store, as: :incomplete_jobs
 
   @doc false
-  defdelegate incomplete,         to: @store,   as: :incomplete_jobs
+  defdelegate incomplete(worker), to: @store, as: :incomplete_jobs
 
   @doc false
-  defdelegate incomplete(worker), to: @store,   as: :incomplete_jobs
+  defdelegate failed, to: @store, as: :failed_jobs
 
   @doc false
-  defdelegate failed,             to: @store,   as: :failed_jobs
+  defdelegate failed(worker), to: @store, as: :failed_jobs
 
   @doc false
-  defdelegate failed(worker),     to: @store,   as: :failed_jobs
+  defdelegate find(job), to: @store, as: :find_job
 
   @doc false
-  defdelegate find(job),          to: @store,   as: :find_job
+  defdelegate insert(job), to: @store, as: :create_job
 
   @doc false
-  defdelegate insert(job),        to: @store,   as: :create_job
+  defdelegate update(job), to: @store, as: :update_job
 
   @doc false
-  defdelegate update(job),        to: @store,   as: :update_job
-
-  @doc false
-  defdelegate destroy(job),       to: @store,   as: :delete_job
-
+  defdelegate destroy(job), to: @store, as: :delete_job
 end
