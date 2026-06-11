@@ -254,10 +254,10 @@ This package is available as open source under the terms of the [MIT License][li
   [shield-version]:   https://img.shields.io/hexpm/v/que.svg
   [shield-license]:   https://img.shields.io/hexpm/l/que.svg
   [shield-downloads]: https://img.shields.io/hexpm/dt/que.svg
-  [shield-travis]:    https://img.shields.io/travis/sheharyarn/que/master.svg
+  [shield-github]:    https://github.com/sheharyarn/que/actions/workflows/ci.yml/badge.svg
   [shield-inch]:      https://inch-ci.org/github/sheharyarn/que.svg?branch=master
 
-  [travis-ci]:        https://travis-ci.org/sheharyarn/que
+  [github-ci]:        https://github.com/sheharyarn/que/actions/workflows/ci.yml
   [inch-ci]:          https://inch-ci.org/github/sheharyarn/que
 
   [license]:          https://opensource.org/licenses/MIT
