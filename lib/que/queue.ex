@@ -35,7 +35,7 @@ defmodule Que.Queue do
   def process(%Que.Queue{running: running, worker: worker} = q) do
     Que.Worker.validate!(worker)
 
-    if length(running) < worker.concurrency do
+    if length(running) < worker.concurrency() do
       case fetch(q) do
         {q, nil} ->
           q

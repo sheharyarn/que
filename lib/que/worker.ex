@@ -155,7 +155,7 @@ defmodule Que.Worker do
   @spec valid?(module :: module) :: boolean
   def valid?(module) do
     try do
-      module.__que_worker__
+      module.__que_worker__()
     rescue
       UndefinedFunctionError -> false
     end
