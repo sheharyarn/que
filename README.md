@@ -1,7 +1,7 @@
 [<img src='https://i.imgur.com/Eec71eh.png' alt='Que' width='200px' />][docs]
 =============================================================================
 
-[![Build Status][shield-travis]][travis-ci]
+[![Build Status][shield-github]][github-ci]
 [![Coverage Status][shield-inch]][docs]
 [![Version][shield-version]][hexpm]
 [![Downloads][shield-downloads]][hexpm]
