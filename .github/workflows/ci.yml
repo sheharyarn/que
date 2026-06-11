@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    name: Build and test
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        include:
+          - elixir: '1.16'
+            otp: '26.0'
+          - elixir: '1.17'
+            otp: '26.0'
+          - elixir: '1.18'
+            otp: '27.0'
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{matrix.otp}}
+          elixir-version: ${{matrix.elixir}}
+
+      - name: Restore dependencies cache
+        uses: actions/cache@v4
+        with:
+          path: deps
+          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+          restore-keys: ${{ runner.os }}-mix-
+
+      - run: mix deps.get
+      - run: mix test
