@@ -61,7 +61,7 @@ defmodule Que.Server do
 
   @doc false
   def handle_call({:add_job, worker, args}, _from, queue) do
-    Que.Helpers.log("Queued new Job for #{ExUtils.Module.name(worker)}")
+    Que.Helpers.log("Queued new Job for #{ExUtils.Modules.name(worker)}")
 
     job =
       worker
