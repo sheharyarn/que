@@ -1,9 +1,4 @@
 defmodule Que.Job do
-  require Logger
-
-  defstruct [:id, :arguments, :worker, :status, :ref, :pid, :created_at, :updated_at]
-  ## Note: Update Que.Persistence.Mnesia after changing these values
-
   @moduledoc """
   Module to manage a Job's state and execute the worker's callbacks.
 
@@ -12,7 +7,11 @@ defmodule Que.Job do
   unless you absolutely know what you're doing.
   """
 
+  # Note: Update Que.Persistence.Mnesia after changing these values
+  defstruct [:id, :arguments, :worker, :status, :ref, :pid, :created_at, :updated_at]
+
   @statuses [:queued, :started, :failed, :completed]
+
   @typedoc "One of the atoms in `#{inspect(@statuses)}`"
   @type status :: atom
 
