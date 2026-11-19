@@ -2,6 +2,16 @@ Changelog
 =========
 
 
+## Version 0.13.0
+
+- [Chore] Update to Elixir 1.20 & OTP 29 for development and CI
+- [Chore] Update to ExUtils 1.0 and replace removed function calls
+- [Chore] Update to the latest ExDoc version
+- [Chore] Remove the old Travis CI configuration
+- [Chore] Update GitHub Actions to Node.js 24 versions
+
+
+
 ## Version 0.12.0
 
 - [Chore] Update to the latest Memento version
@@ -58,6 +68,6 @@ I don't remember tbh. Check the [commit history][commits].
 
 
 
-  [commits]: https://github.com/sheharyarn/que/commits/master
-  [memento]: https://github.com/sheharyarn/memento
-  [amnesia]: https://github.com/meh/amnesia/
+[commits]: https://github.com/sheharyarn/que/commits/master
+[memento]: https://github.com/sheharyarn/memento
+[amnesia]: https://github.com/meh/amnesia/
